@@ -1,6 +1,6 @@
 #! /bin/bash
 
-CONTAINERS="icommands res-centos5 icat icat-db"
+CONTAINERS="icommands centos5RS icat icat-db"
 
 docker stop $CONTAINERS
 docker rm $CONTAINERS

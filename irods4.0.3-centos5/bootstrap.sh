@@ -24,18 +24,16 @@ then
   exit 1
 fi
 
-export ICAT_HOST=$ICAT_PORT_1247_TCP_ADDR
-
 # generate configuration responses
 /opt/irods/genresp.sh /opt/irods/setup_responses
 
 # set up iRODS
 /opt/irods/config.sh /opt/irods/setup_responses
 
-# change irods user's irodsEnv file to point to localhost, since it was configured with a transient 
+# change irods user's irodsEnv file to point to localhost, since it was configured with a transient
 # Docker container's $
-sed -i 's/^irodsHost.*/irodsHost localhost/' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/^irodsHost.*/irodsHost icat/' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/^irodsDefResource.*/irodsDefResource demoResc/' /var/lib/irods/.irods/.irodsEnv
 
 # this script must end with a persistent foreground process
 tail -f /var/lib/irods/iRODS/server/log/rodsLog.*
-

@@ -20,8 +20,8 @@ RUN mkdir /opt/irods
 ADD ./genresp.sh /opt/irods/genresp.sh
 ADD ./config.sh /opt/irods/config.sh
 ADD ./bootstrap.sh /opt/irods/bootstrap.sh
+ADD ./assign-resource-host.sh /opt/irods/assign-resource-host.sh
 RUN chmod a+x /opt/irods/*.sh
 
 EXPOSE 1247 20000-20199
 ENTRYPOINT [ "/opt/irods/bootstrap.sh" ]
-

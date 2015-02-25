@@ -2,7 +2,7 @@ FROM centos:5
 MAINTAINER tedgin@iplantcollaborative.org
 
 RUN yum update -y
-RUN yum install -y sudo wget
+RUN yum install -y sudo wget which
 
 ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
