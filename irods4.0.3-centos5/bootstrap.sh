@@ -24,11 +24,28 @@ then
   exit 1
 fi
 
-# generate configuration responses
-/opt/irods/genresp.sh /opt/irods/setup_responses
 
-# set up iRODS
-/opt/irods/config.sh /opt/irods/setup_responses
+# generate configuration responses
+function genresp ()
+{
+    echo "irods"                 # service account user ID
+    echo "irods"                 # service account group ID
+    echo "1247"                  # service port #
+    echo "20000"                 # transport starting port #
+    echo "20199"                 # transport ending port #
+    echo "/var/lib/irods/Vault"  # vault path
+    echo "$LOCAL_ZONE_SID"       # zone SID
+    echo "$AGENT_KEY"            # agent key
+    echo "rods"                  # iRODS admin account
+    echo "yes"                   # confirm iRODS settings+
+    echo "icat"                  # ICAT host
+    echo "tempZone"              # initial zone name
+    echo "yes"                   # confirm iRODS settings+
+    echo "$RODS_PASSWORD"        # iRODS admin password
+}
+
+
+genresp | /var/lib/irods/packaging/setup_irods.sh
 
 # change irods user's irodsEnv file to point to localhost, since it was configured with a transient
 # Docker container's $

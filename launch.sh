@@ -20,7 +20,6 @@ docker run --detach --tty --env RODS_PASSWORD=$PASSWORD --env LOCAL_ZONE_SID=$LO
            --name $RES1_NAME irods4.0.3-centos5
 sleep 10
 RES1_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $RES1_NAME)
-docker exec --tty $ICAT_NAME \
-            /opt/irods/assign-resource-host.sh ${RES1_NAME}Resource $RES1_NAME $RES1_IP
+docker exec --tty $ICAT_NAME ./assign-resource-host.sh ${RES1_NAME}Resource $RES1_NAME $RES1_IP
 docker run --interactive --rm --tty --env RODS_PASSWORD=$PASSWORD --link $ICAT_NAME:icat \
            --name icommands icommands4.0.3
