@@ -32,15 +32,13 @@ function assign-resource-host ()
     HOST=$1
 
     IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $HOST)
-    docker exec --tty $ICAT_NAME ./assign-resource-host.sh ${HOST}Resource $HOST $IP
+    docker exec --tty $ICAT_NAME ./assign-resource-host.sh $HOST $IP
 }
 
 
 ./stop.sh >/dev/null 2>/dev/null
 
 docker run --detach --env POSTGRES_PASSWORD=$PASSWORD --name $DB_NAME irods4.0.3-icat-db
-
-sleep 10
 
 docker run --detach --tty \
            --env AGENT_KEY=$AGENT_KEY \
@@ -51,12 +49,10 @@ docker run --detach --tty \
            --name $ICAT_NAME \
            irods4.0.3-icat
 
-sleep 10
 run-resource-server $RES1_NAME irods4.0.3-rs-centos5
 run-resource-server $RES2_NAME irods4.0.3-rs-centos6
 run-resource-server $RES3_NAME irods4.0.3-rs-ubuntu
 
-sleep 10
 assign-resource-host $RES1_NAME
 assign-resource-host $RES2_NAME
 assign-resource-host $RES3_NAME

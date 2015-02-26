@@ -43,6 +43,18 @@ function genresp ()
 }
 
 
+while true
+do
+    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host db ICAT irods
+
+    if [ $? -eq 0 ]
+    then
+        break
+    fi
+
+    sleep 1
+done
+
 genresp | /var/lib/irods/packaging/setup_irods.sh
 
 # change irods user's irodsEnv file to point to localhost, since it was configured with a transient 

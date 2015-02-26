@@ -1,8 +1,6 @@
 #! /bin/bash
 
-RESC=$1
-HOST=$2
-ADDR=$3
+HOST=$1
+ADDR=$2
 
 echo "$ADDR $HOST" >> /etc/hosts
-sudo -H -u irods iadmin modresc $RESC host $HOST

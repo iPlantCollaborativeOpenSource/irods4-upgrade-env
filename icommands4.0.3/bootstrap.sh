@@ -23,6 +23,18 @@ function genresp ()
 }
 
 
-genresp | iinit
+while true
+do
+    echo "$RODS_PASSWORD" \
+        | irodsHost=icat irodsPort=1247 irodsUserName=rods irodsZone=tempZone imiscsvrinfo
 
+    if [ $? -eq 0 ]
+    then
+        break
+    fi
+
+    sleep 1
+done
+
+genresp | iinit
 bash
