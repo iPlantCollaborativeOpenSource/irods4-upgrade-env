@@ -12,17 +12,17 @@ then
   exit 1
 fi
 
-echo "icat"           >  iinit_responses
-echo "1247"           >> iinit_responses
-echo "rods"           >> iinit_responses
-echo "tempZone"       >> iinit_responses
-echo "$RODS_PASSWORD" >> iinit_responses
 
-iinit < iinit_responses
+function genresp ()
+{
+    echo "icat"
+    echo "1247"
+    echo "rods"
+    echo "tempZone"
+    echo "$RODS_PASSWORD"
+}
 
-if [ $? -eq 0 ]
-then
-  rm -f iinit_responses
 
-  bash
-fi
+genresp | iinit
+
+bash
