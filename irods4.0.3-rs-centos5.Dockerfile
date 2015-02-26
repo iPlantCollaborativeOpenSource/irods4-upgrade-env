@@ -2,10 +2,11 @@ FROM centos:5
 MAINTAINER tedgin@iplantcollaborative.org
 
 RUN yum update -y
-RUN yum install -y sudo wget which
 
 ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
+
+RUN yum install -y sudo wget which
 
 RUN wget --output-document=/tmp/irods.rpm \
          ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-resource-4.0.3-64bit-centos5.rpm

@@ -2,10 +2,11 @@ FROM centos:6
 MAINTAINER tedgin@iplantcollaborative.org
 
 RUN yum update --assumeyes
-RUN yum install --assumeyes sudo which
 
 ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
+
+RUN yum install --assumeyes sudo which
 
 RUN yum install --assumeyes \
                 ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-resource-4.0.3-64bit-centos6.rpm
