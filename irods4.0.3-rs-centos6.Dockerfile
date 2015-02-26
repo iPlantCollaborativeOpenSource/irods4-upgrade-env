@@ -10,10 +10,10 @@ ENV LC_ALL en_US.UTF-8
 RUN yum install --assumeyes \
                 ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-resource-4.0.3-64bit-centos6.rpm
 
-ADD ./get_icat_server_password.sh /var/lib/irods/packaging/get_icat_server_password.sh
+COPY irods4.0.3-rs/get_icat_server_password.sh /var/lib/irods/packaging/get_icat_server_password.sh
 RUN chmod a+x /var/lib/irods/packaging/get_icat_server_password.sh
 
-ADD ./bootstrap.sh bootstrap.sh
+COPY irods4.0.3-rs/bootstrap.sh bootstrap.sh
 RUN chmod a+x bootstrap.sh
 
 EXPOSE 1247 20000-20199

@@ -2,7 +2,7 @@
 
 if [ -z "$DB_NAME" ]
 then
-  echo "A tedgin/irods4.0.3-icat-db-postgres9.3 container needs to be linked to 'db'." 
+  echo "An irods4.0.3-icat-db container needs to be linked to 'db'."
   exit 1
 fi
 

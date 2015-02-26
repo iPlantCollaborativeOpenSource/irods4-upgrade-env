@@ -2,7 +2,7 @@
 
 if [ -z "$ICAT_PORT_1247_TCP_ADDR" ]
 then
-  echo "A tedgin/irods4.0.3-icat-centos5 container needs to be linked to 'icat'." 
+  echo "A irods4.0.3-icat container needs to be linked to 'icat'."
   exit 1
 fi
 

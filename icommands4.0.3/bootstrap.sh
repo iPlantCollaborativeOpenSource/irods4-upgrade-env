@@ -2,7 +2,7 @@
 
 if [ -z "$ICAT_NAME" ]
 then
-  echo "An irods4.0.3-icat-centos5 container needs to be linked to 'icat'."
+  echo "An irods4.0.3-icat container needs to be linked to 'icat'."
   exit 1
 fi
 
