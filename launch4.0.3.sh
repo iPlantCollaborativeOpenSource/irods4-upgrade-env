@@ -38,7 +38,7 @@ function assign-resource-host ()
 
 ./stop.sh >/dev/null 2>/dev/null
 
-docker run --detach --env POSTGRES_PASSWORD=$PASSWORD --name $DB_NAME irods4.0.3-icat-db
+docker run --detach --env POSTGRES_PASSWORD=$PASSWORD --name $DB_NAME icat-db
 
 docker run --detach --tty \
            --env AGENT_KEY=$AGENT_KEY \
