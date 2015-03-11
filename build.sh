@@ -2,7 +2,8 @@
 
 docker build --file icat-db.Dockerfile --tag icat-db .
 
-docker build --file icommands3.3.1.Dockerfile --tag icommands3.3.1 .
+docker build --file irods3.3.1-icat.Dockerfile --tag irods3.3.1-icat .
+docker build --file icommands3.3.1.Dockerfile  --tag icommands3.3.1 .
 
 docker build --file irods4.0.3-icat.Dockerfile       --tag irods4.0.3-icat .
 docker build --file irods4.0.3-rs-centos5.Dockerfile --tag irods4.0.3-rs-centos5 .
