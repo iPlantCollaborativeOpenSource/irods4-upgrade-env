@@ -45,7 +45,7 @@ function genresp ()
 
 while true
 do
-    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host db ICAT irods
+    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host db postgres irods
 
     if [ $? -eq 0 ]
     then
@@ -54,6 +54,11 @@ do
 
     sleep 1
 done
+
+PGPASSWORD=$DB_PASSWORD psql --host db postgres irods <<- EOSQL
+    CREATE DATABASE "ICAT";
+    GRANT ALL PRIVILEGES ON DATABASE "ICAT" TO irods;
+EOSQL
 
 genresp | /var/lib/irods/packaging/setup_irods.sh
 

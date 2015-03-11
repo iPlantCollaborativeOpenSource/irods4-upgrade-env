@@ -1,11 +1,9 @@
 #!/bin/bash
 
-echo "Configuring ICAT"
+echo "Configuring iRODS user"
 
 gosu postgres postgres --single <<- EOSQL
   CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';
-  CREATE DATABASE "ICAT";
-  GRANT ALL PRIVILEGES ON DATABASE "ICAT" TO $POSTGRES_USER;
 EOSQL
 
 cat > /var/lib/postgresql/data/pg_hba.conf <<EOS

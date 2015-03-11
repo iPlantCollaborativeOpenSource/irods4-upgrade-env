@@ -1,11 +1,10 @@
 FROM centos:5
 MAINTAINER tedgin@iplantcollaborative.org
 
-RUN yum update -y
-
 ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
+RUN yum update -y
 RUN yum install -y sudo wget which
 
 # download iRODS
