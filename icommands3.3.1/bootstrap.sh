@@ -1,8 +1,10 @@
 #!/bin/bash
 
-if [ -z "$irodsHost" ]
+if [ -z "$ICAT_NAME" ]
 then
-   export irodsHost=localhost
+    export irodsHost=localhost
+else
+    export irodsHost=icat
 fi
 
 if [ -z "$irodsPort" ]
@@ -20,5 +22,23 @@ then
     export irodsZone=tempZone
 fi
 
+if [ -z "$RODS_PASSWORD" ]
+then
+    RODS_PASSWORD=rods
+fi
 
+
+while true
+do
+    imiscsvrinfo
+
+    if [ $? -eq 0 ]
+    then
+        break
+    fi
+
+    sleep 1
+done
+
+echo "$RODS_PASSWORD" | iinit
 bash

@@ -24,7 +24,9 @@ docker run --detach --tty \
            irods3.3.1-icat
 
 docker run --interactive --tty \
-           --env irodsHost=irods-2.iplantcollaborative.org --env irodsZone=iplant --name icommands \
+           --env irodsUserName=$ADMIN_USER --env irodsZone=iplant --env RODS_PASSWORD=$PASSWORD \
+           --link $ICAT_NAME:icat \
+           --name icommands \
            icommands3.3.1
 
 ./stop.sh
