@@ -7,7 +7,6 @@ ZONE=iplant
 
 DB_NAME=icat-db
 ICAT_NAME=icat
-RES1_NAME=centos5RS
 
 
 function run-resource-server ()
@@ -43,7 +42,8 @@ docker run --detach --tty \
            --name $ICAT_NAME \
            irods3.3.1-icat
 
-run-resource-server $RES1_NAME irods3.3.1-rs-centos5
+run-resource-server centos5RS irods3.3.1-rs-centos5
+run-resource-server centos6RS irods3.3.1-rs-centos6
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
