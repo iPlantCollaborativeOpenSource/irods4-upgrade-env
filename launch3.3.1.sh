@@ -3,9 +3,29 @@
 ADMIN_USER=ipc_admin
 DB_USER=rodsuser
 PASSWORD=password
+ZONE=iplant
 
 DB_NAME=icat-db
 ICAT_NAME=icat
+RES1_NAME=centos5RS
+
+
+function run-resource-server ()
+{
+    NAME=$1
+    IMAGE=$2
+
+    docker run --detach --tty \
+               --env ADMIN_USER=$ADMIN_USER \
+               --env ADMIN_PASSWORD=$PASSWORD \
+               --env RESOURCE_NAME=${NAME}Resc \
+               --env ZONE=$ZONE \
+               --hostname $NAME --link $ICAT_NAME:icat --name $NAME \
+               $IMAGE
+
+    IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $NAME)
+    docker exec --tty $ICAT_NAME ./assign-resource-host.sh $NAME $IP
+}
 
 
 ./stop.sh >/dev/null 2>/dev/null
@@ -18,13 +38,15 @@ docker run --detach --tty \
            --env ADMIN_PASSWORD=$PASSWORD \
            --env DB_USER=$DB_USER \
            --env DB_PASSWORD=$PASSWORD \
-           --env ZONE=iplant \
+           --env ZONE=$ZONE \
            --link $DB_NAME:db \
            --name $ICAT_NAME \
            irods3.3.1-icat
 
+run-resource-server $RES1_NAME irods3.3.1-rs-centos5
+
 docker run --interactive --tty \
-           --env irodsUserName=$ADMIN_USER --env irodsZone=iplant --env RODS_PASSWORD=$PASSWORD \
+           --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
            --link $ICAT_NAME:icat \
            --name icommands \
            icommands3.3.1

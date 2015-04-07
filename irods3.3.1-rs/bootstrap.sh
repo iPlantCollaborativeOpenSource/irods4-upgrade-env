@@ -1,20 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ -z "$DB_NAME" ]
+if [ -z "ICAT_NAME" ]
 then
-    echo "An icat-db container needs to be linked to 'db'" 1>&2
+    echo "An irods3.3.1-icat container needs to be linked to 'icat'" 1>&2
     exit 1
 fi
 
-if [ -z "$DB_PASSWORD" ]
+if [ -z "$RESOURCE_NAME" ]
 then
-    echo "The environment variable DB_PASSWORD wasn't set" 1>&2
+    echo "The RESOURCE_NAME environment variables needs to be set" 1>&2
     exit 1
-fi
-
-if [ -z "$DB_USER" ]
-then
-    DB_USER=irods
 fi
 
 if [ -z "$ADMIN_USER" ]
@@ -37,16 +32,16 @@ function mk_irods_config ()
 {
     echo "# Database configuration"
     echo ""
-    echo "\$DATABASE_TYPE = 'postgres';"
-    echo "\$DATABASE_ODBC_TYPE = 'unix';"
+    echo "\$DATABASE_TYPE = '';"
+    echo "\$DATABASE_ODBC_TYPE = '';"
     echo "\$DATABASE_EXCLUSIVE_TO_IRODS = '0';"
-    echo "\$DATABASE_HOME = '/usr/pgsql-9.0';"
+    echo "\$DATABASE_HOME = '';"
     echo "\$DATABASE_LIB = '';"
     echo ""
-    echo "\$DATABASE_HOST = 'db';"
-    echo "\$DATABASE_PORT = '5432';"
-    echo "\$DATABASE_ADMIN_PASSWORD = '$DB_PASSWORD';"
-    echo "\$DATABASE_ADMIN_NAME = '$DB_USER';"
+    echo "\$DATABASE_HOST = '';"
+    echo "\$DATABASE_PORT = '';"
+    echo "\$DATABASE_ADMIN_PASSWORD = '';"
+    echo "\$DATABASE_ADMIN_NAME = '';"
     echo ""
     echo "# iRODS configuration"
     echo ""
@@ -56,10 +51,10 @@ function mk_irods_config ()
     echo "\$SVR_PORT_RANGE_END = '20399';"
     echo "\$IRODS_ADMIN_NAME = '$ADMIN_USER';"
     echo "\$IRODS_ADMIN_PASSWORD = '$ADMIN_PASSWORD';"
-    echo "\$IRODS_ICAT_HOST = '';"
+    echo "\$IRODS_ICAT_HOST = 'icat';"
     echo ""
     echo "\$DB_NAME = 'ICAT';"
-    echo "\$RESOURCE_NAME = 'demoResc';"
+    echo "\$RESOURCE_NAME = '$RESOURCE_NAME';"
     echo "\$RESOURCE_DIR = '/home/irods/iRODS/Vault';"
     echo "\$ZONE_NAME = '$ZONE';"
     echo "\$DB_KEY = '123';"
@@ -92,17 +87,22 @@ function setup_irods ()
 mk_irods_config > /home/irods/iRODS/config/irods.config
 chown irods:irods /home/irods/iRODS/config/irods.config
 
-while true
-do
-    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host db postgres $DB_USER
+setup_irods
 
-    if [ $? -eq 0 ]
-    then
-        break
-    fi
-
-    sleep 1
-done
+# This probably failed because icat hasn't finished starting. The icommands have been built now, so
+# we can use imiscsvrinfo to detect when icat has started.
+sudo -H -u irods sh -c '
+    export irodsHost=icat;
+    export irodsPort=1247;
+    while true
+    do
+        /home/irods/iRODS/clients/icommands/bin/imiscsvrinfo
+        if [ $? -eq 0 ]
+        then
+            break
+        fi
+        sleep 1
+    done'
 
 setup_irods
 
@@ -113,4 +113,3 @@ then
 fi
 
 bash
-

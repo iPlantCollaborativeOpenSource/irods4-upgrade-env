@@ -41,7 +41,7 @@ function assign-resource-host ()
 docker run --detach --env POSTGRES_USER=irods --env POSTGRES_PASSWORD=$PASSWORD --name $DB_NAME \
            icat-db
 
-docker run --detach --tty \
+docker run --detach --tty -v /home/tedgin/playpin/log:/playpin \
            --env AGENT_KEY=$AGENT_KEY \
            --env DB_PASSWORD=$PASSWORD \
            --env LOCAL_ZONE_SID=$LOCAL_ZONE_SID \
@@ -58,7 +58,7 @@ assign-resource-host $RES1_NAME
 assign-resource-host $RES2_NAME
 assign-resource-host $RES3_NAME
 
-docker run --interactive --tty \
+docker run --interactive --tty -v /home/tedgin/playpin:/playpin \
            --env RODS_PASSWORD=$PASSWORD \
            --link $ICAT_NAME:icat \
            --name icommands \

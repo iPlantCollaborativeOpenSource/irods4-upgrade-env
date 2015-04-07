@@ -67,4 +67,6 @@ genresp | /var/lib/irods/packaging/setup_irods.sh
 sed -i 's/^irodsHost.*/irodsHost localhost/' /var/lib/irods/.irods/.irodsEnv
 
 # this script must end with a persistent foreground process
-tail -f /var/lib/irods/iRODS/server/log/rodsLog.*
+#tail -f /var/lib/irods/iRODS/server/log/rodsLog.*
+
+bash
