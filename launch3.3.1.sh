@@ -44,6 +44,7 @@ docker run --detach --tty \
 
 run-resource-server centos5RS irods3.3.1-rs-centos5
 run-resource-server centos6RS irods3.3.1-rs-centos6
+run-resource-server ubuntuRS irods3.3.1-rs-ubuntu
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \

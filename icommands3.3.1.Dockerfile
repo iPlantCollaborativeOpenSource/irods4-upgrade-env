@@ -2,7 +2,7 @@ FROM debian
 MAINTAINER tedgin@iplantcollaborative.org
 
 RUN apt-get update
-RUN apt-get install --yes adduser g++ gcc make perl-modules
+RUN apt-get install --yes adduser g++ make perl-modules
 
 RUN adduser --system irods
 
