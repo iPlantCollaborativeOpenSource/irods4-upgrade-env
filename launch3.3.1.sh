@@ -7,17 +7,21 @@ ZONE=iplant
 
 DB_NAME=icat-db
 ICAT_NAME=icat
+RES1_NAME=centos5RSResc
+RES2_NAME=centos6RSResc
+RES3_NAME=ubuntuRSResc
 
 
 function run-resource-server ()
 {
     NAME=$1
-    IMAGE=$2
+    RESC=$2
+    IMAGE=$3
 
     docker run --detach --tty \
                --env ADMIN_USER=$ADMIN_USER \
                --env ADMIN_PASSWORD=$PASSWORD \
-               --env RESOURCE_NAME=${NAME}Resc \
+               --env RESOURCE_NAME=$RESC \
                --env ZONE=$ZONE \
                --hostname $NAME --link $ICAT_NAME:icat --name $NAME \
                $IMAGE
@@ -42,14 +46,14 @@ docker run --detach --tty \
            --name $ICAT_NAME \
            irods3.3.1-icat
 
-run-resource-server centos5RS irods3.3.1-rs-centos5
-run-resource-server centos6RS irods3.3.1-rs-centos6
-run-resource-server ubuntuRS irods3.3.1-rs-ubuntu
+run-resource-server centos5RS $RES1_NAME irods3.3.1-rs-centos5
+run-resource-server centos6RS $RES2_NAME irods3.3.1-rs-centos6
+run-resource-server ubuntuRS $RES3_NAME irods3.3.1-rs-ubuntu
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
            --link $ICAT_NAME:icat \
            --name icommands \
-           icommands3.3.1
+           icommands3.3.1 $RES1_NAME $RES2_NAME $RES3_NAME
 
 ./stop.sh

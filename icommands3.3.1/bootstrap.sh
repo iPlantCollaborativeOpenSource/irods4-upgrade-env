@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# The arguments are a list of resources to wait for. The script will not start the bash shell until
+# all of the listed resources are registered with icat.
+
 
 if [ -z "$ICAT_NAME" ]
 then
@@ -41,4 +45,13 @@ do
 done
 
 echo "$RODS_PASSWORD" | iinit
+
+for rs in $@
+do
+    while [ "$(iadmin lr $rs)" == "No rows found" ]
+    do
+        sleep 1
+    done
+done
+
 bash

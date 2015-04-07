@@ -1,15 +1,55 @@
 #!/bin/bash
 
-function genresp ()
+function mk_irods_config ()
 {
-    echo "no"   # no advanced settings
-    echo "no"   # no server
-    echo "no"   # no GSI
-    echo "no"   # no kerberos
-    echo "no"   # no NCCS auditing
-    echo "yes"  # save configuration
-    echo "yes"  # start build
+    echo "# Database configuration"
+    echo ""
+    echo "\$DATABASE_TYPE = '';"
+    echo "\$DATABASE_ODBC_TYPE = '';"
+    echo "\$DATABASE_EXCLUSIVE_TO_IRODS = '0';"
+    echo "\$DATABASE_HOME = '';"
+    echo "\$DATABASE_LIB = '';"
+    echo ""
+    echo "\$DATABASE_HOST = '';"
+    echo "\$DATABASE_PORT = '';"
+    echo "\$DATABASE_ADMIN_PASSWORD = '';"
+    echo "\$DATABASE_ADMIN_NAME = '';"
+    echo ""
+    echo "# iRODS configuration"
+    echo ""
+    echo "\$IRODS_HOME = '/home/irods/iRODS';"
+    echo "\$IRODS_PORT = '1247';"
+    echo "\$SVR_PORT_RANGE_START = '';"
+    echo "\$SVR_PORT_RANGE_END = '';"
+    echo "\$IRODS_ADMIN_NAME = '';"
+    echo "\$IRODS_ADMIN_PASSWORD = '';"
+    echo "\$IRODS_ICAT_HOST = '';"
+    echo ""
+    echo "\$DB_NAME = '';"
+    echo "\$RESOURCE_NAME = '';"
+    echo "\$RESOURCE_DIR = '';"
+    echo "\$ZONE_NAME = '';"
+    echo "\$DB_KEY = '';"
+    echo ""
+    echo "\$GSI_AUTH = '0';"
+    echo "\$GLOBUS_LOCATION = '';"
+    echo "\$GSI_INSTALL_TYPE = '';"
+    echo ""
+    echo "\$KRB_AUTH = '0';"
+    echo "\$KRB_LOCATION = '';"
+    echo ""
+    echo "# NCCS Audit Extensions"
+    echo ""
+    echo "\$AUDIT_EXT = '0';"
+    echo ""
+    echo "# UNICODE"
+    echo ""
+    echo "\$UNICODE = '';"
+    echo ""
+    echo "return 1;"
 }
 
 
-genresp | ./irodssetup
+mk_irods_config > /home/irods/iRODS/config/irods.config
+chown irods:irods /home/irods/iRODS/config/irods.config
+sudo -H -u irods sh -c "cd /home/irods/iRODS; yes | ./irodssetup"
