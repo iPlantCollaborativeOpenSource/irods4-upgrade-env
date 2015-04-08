@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 # The arguments are a list of resources to wait for. The script will not start the bash shell until
-# all of the listed resources are registered with icat.
+# all of the listed resources are registered with iers.
 
 
-if [ -z "$ICAT_NAME" ]
+if [ -z "$IERS_NAME" ]
 then
     export irodsHost=localhost
 else
-    export irodsHost=icat
+    export irodsHost=iers
 fi
 
 if [ -z "$irodsPort" ]

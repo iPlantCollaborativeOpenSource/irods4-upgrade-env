@@ -6,7 +6,7 @@ PASSWORD=password
 ZONE=iplant
 
 DB_NAME=icat-db
-ICAT_NAME=icat
+IERS_NAME=iers
 RES1_NAME=centos5RSResc
 RES2_NAME=centos6RSResc
 RES3_NAME=ubuntuRSResc
@@ -23,11 +23,11 @@ function run-resource-server ()
                --env ADMIN_PASSWORD=$PASSWORD \
                --env RESOURCE_NAME=$RESC \
                --env ZONE=$ZONE \
-               --hostname $NAME --link $ICAT_NAME:icat --name $NAME \
+               --hostname $NAME --link $IERS_NAME:iers --name $NAME \
                $IMAGE
 
     IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $NAME)
-    docker exec --tty $ICAT_NAME ./assign-resource-host.sh $NAME $IP
+    docker exec --tty $IERS_NAME ./assign-resource-host.sh $NAME $IP
 }
 
 
@@ -43,8 +43,8 @@ docker run --detach --tty \
            --env DB_PASSWORD=$PASSWORD \
            --env ZONE=$ZONE \
            --link $DB_NAME:db \
-           --name $ICAT_NAME \
-           irods3.3.1-icat
+           --name $IERS_NAME \
+           irods3.3.1-iers
 
 run-resource-server centos5RS $RES1_NAME irods3.3.1-rs-centos5
 run-resource-server centos6RS $RES2_NAME irods3.3.1-rs-centos6
@@ -52,7 +52,7 @@ run-resource-server ubuntuRS $RES3_NAME irods3.3.1-rs-ubuntu
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
-           --link $ICAT_NAME:icat \
+           --link $IERS_NAME:iers \
            --name icommands \
            icommands3.3.1 $RES1_NAME $RES2_NAME $RES3_NAME
 
