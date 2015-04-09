@@ -23,6 +23,6 @@ function gen-resp ()
 }
 
 
-cd /home/irods/iRODS
-gen-resp | ./irodssetup
-sed -i 's/^irodsHost.*/irodsHost localhost/' /home/irods/.irods/.irodsEnv
+(cd iRODS && gen-resp | ./irodssetup)
+iRODS/irodsctl stop
+sed -i 's/^irodsHost.*/irodsHost localhost/' .irods/.irodsEnv
