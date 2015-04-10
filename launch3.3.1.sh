@@ -10,6 +10,23 @@ IERS_NAME=iers
 RES1_NAME=centos5RSResc
 RES2_NAME=centos6RSResc
 RES3_NAME=ubuntuRSResc
+ICAT_NAME=icat
+
+
+function assign-host ()
+{
+    FROM_HOST=$1
+    TO_HOST=$2
+
+    while true
+    do
+        TO_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $TO_HOST)
+        if [ $? -eq 0 ]; then break; fi
+        sleep 1
+    done
+
+    docker exec --tty $FROM_HOST ./assign-resource-host.sh $TO_HOST $TO_IP
+}
 
 
 function run-resource-server ()
@@ -26,8 +43,7 @@ function run-resource-server ()
                --hostname $NAME --link $IERS_NAME:iers --name $NAME \
                $IMAGE
 
-    IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $NAME)
-    docker exec --tty $IERS_NAME ./assign-resource-host.sh $NAME $IP
+    assign-host $IERS_NAME $NAME
 }
 
 
@@ -54,7 +70,9 @@ run-resource-server centos5RS $RES1_NAME irods3.3.1-rs-centos5
 run-resource-server centos6RS $RES2_NAME irods3.3.1-rs-centos6
 run-resource-server ubuntuRS $RES3_NAME irods3.3.1-rs-ubuntu
 
-xterm -e docker run --interactive --tty --hostname icat --name icat irods3.3.1-icat &
+xterm -e docker run --interactive --tty --hostname $ICAT_NAME --name $ICAT_NAME irods3.3.1-icat &
+assign-host $IERS_NAME $ICAT_NAME
+
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
