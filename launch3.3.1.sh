@@ -42,6 +42,7 @@ docker run --detach --tty \
            --env DB_USER=$DB_USER \
            --env DB_PASSWORD=$PASSWORD \
            --env ZONE=$ZONE \
+           --hostname $IERS_NAME \
            --link $DB_NAME:db \
            --name $IERS_NAME \
            irods3.3.1-iers
@@ -49,6 +50,8 @@ docker run --detach --tty \
 run-resource-server centos5RS $RES1_NAME irods3.3.1-rs-centos5
 run-resource-server centos6RS $RES2_NAME irods3.3.1-rs-centos6
 run-resource-server ubuntuRS $RES3_NAME irods3.3.1-rs-ubuntu
+
+xterm -e docker run --interactive --tty --hostname icat --name icat irods3.3.1-icat &
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
