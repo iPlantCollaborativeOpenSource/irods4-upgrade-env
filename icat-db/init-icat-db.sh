@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Configuring iRODS user"
-
 gosu postgres postgres --single <<- EOSQL
   CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';
 EOSQL

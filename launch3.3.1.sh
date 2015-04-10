@@ -33,8 +33,11 @@ function run-resource-server ()
 
 ./stop.sh >/dev/null 2>/dev/null
 
-docker run --detach --env POSTGRES_USER=$DB_USER --env POSTGRES_PASSWORD=$PASSWORD --name $DB_NAME \
-           icat-db
+docker run --detach \
+           --env POSTGRES_USER=$DB_USER --env POSTGRES_PASSWORD=$PASSWORD \
+           --volume $(pwd)/icat-db:/docker-entrypoint-initdb.d/ \
+           --name $DB_NAME \
+           postgres:9.3
 
 docker run --detach --tty \
            --env ADMIN_USER=$ADMIN_USER \
