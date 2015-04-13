@@ -3,6 +3,8 @@
 
 iRODS/irodsctl start
 
+iadmin modresc demoResc host $HOSTNAME
+
 if [ $# -ge 1 ]
 then
     PASSWORD="$1"
