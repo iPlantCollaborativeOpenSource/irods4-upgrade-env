@@ -25,7 +25,7 @@ function assign-host ()
         sleep 1
     done
 
-    docker exec --tty $FROM_HOST ./assign-resource-host.sh $TO_HOST $TO_IP
+    docker exec --tty $FROM_HOST /add-host.sh $TO_HOST $TO_IP
 }
 
 
@@ -35,13 +35,13 @@ function run-resource-server ()
     RESC=$2
     IMAGE=$3
 
-    docker run --detach --tty \
-               --env ADMIN_USER=$ADMIN_USER \
-               --env ADMIN_PASSWORD=$PASSWORD \
-               --env RESOURCE_NAME=$RESC \
-               --env ZONE=$ZONE \
-               --hostname $NAME --link $IERS_NAME:iers --name $NAME \
-               $IMAGE
+    xterm -e docker run --interactive --tty \
+                        --env ADMIN_USER=$ADMIN_USER \
+                        --env ADMIN_PASSWORD=$PASSWORD \
+                        --env RESOURCE_NAME=$RESC \
+                        --env ZONE=$ZONE \
+                        --hostname $NAME --link $IERS_NAME:iers --name $NAME \
+                        $IMAGE &
 
     assign-host $IERS_NAME $NAME
 }
@@ -55,29 +55,28 @@ docker run --detach \
            --name $DB_NAME \
            postgres:9.3
 
-docker run --detach --tty \
-           --env ADMIN_USER=$ADMIN_USER \
-           --env ADMIN_PASSWORD=$PASSWORD \
-           --env DB_USER=$DB_USER \
-           --env DB_PASSWORD=$PASSWORD \
-           --env ZONE=$ZONE \
-           --hostname $IERS_NAME \
-           --link $DB_NAME:db \
-           --name $IERS_NAME \
-           irods3.3.1-iers
+xterm -e docker run --interactive --tty \
+                    --env ADMIN_USER=$ADMIN_USER \
+                    --env ADMIN_PASSWORD=$PASSWORD \
+                    --env DB_USER=$DB_USER \
+                    --env DB_PASSWORD=$PASSWORD \
+                    --env ZONE=$ZONE \
+                    --hostname $IERS_NAME \
+                    --link $DB_NAME:db \
+                    --name $IERS_NAME \
+                    irods3.3.1-iers &
 
+sleep 1
 run-resource-server centos5RS $RES1_NAME irods3.3.1-rs-centos5
 run-resource-server centos6RS $RES2_NAME irods3.3.1-rs-centos6
 run-resource-server ubuntuRS $RES3_NAME irods3.3.1-rs-ubuntu
 
 xterm -e docker run --interactive --tty --hostname $ICAT_NAME --name $ICAT_NAME irods3.3.1-icat &
-assign-host $IERS_NAME $ICAT_NAME
-
 
 docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
            --link $IERS_NAME:iers \
            --name icommands \
-           icommands3.3.1 $RES1_NAME $RES2_NAME $RES3_NAME
+           icommands3.3.1 # $RES1_NAME $RES2_NAME $RES3_NAME
 
 ./stop.sh

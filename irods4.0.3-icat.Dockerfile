@@ -16,7 +16,7 @@ RUN yum install -y --nogpgcheck \
                 irods-database-plugin-postgres-1.3-centos5.rpm irods-icat-4.0.3-64bit-centos5.rpm
 
 COPY irods4.0.3-icat/bootstrap.sh /
-COPY scripts/assign-resource-host.sh /
+COPY scripts/add-host.sh /
 RUN chmod a+x *.sh
 
 EXPOSE 1247 20000-20199

@@ -7,6 +7,9 @@ ENV LC_ALL en_US.UTF-8
 RUN yum update --assumeyes
 RUN yum install --assumeyes gcc gcc-c++ perl tar which
 
+COPY scripts/add-host.sh /
+RUN chmod a+x add-host.sh
+
 RUN useradd --create-home --system irods
 WORKDIR /home/irods
 
@@ -22,7 +25,7 @@ USER irods
 RUN ./build-irods.sh
 USER root
 
-ENV PATH /home/irods/iRODS/clients/icommands/bin:$PATH
+ENV PATH /home/irods/iRODS/clients/icommands/bin:/home/irods/pgsql/bin:$PATH
 
 COPY irods3.3.1-icat/odbc.ini ./.odbc.ini
 COPY irods3.3.1-icat/bootstrap.sh ./

@@ -32,7 +32,7 @@ function assign-resource-host ()
     HOST=$1
 
     IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $HOST)
-    docker exec --tty $ICAT_NAME ./assign-resource-host.sh $HOST $IP
+    docker exec --tty $ICAT_NAME ./add-host.sh $HOST $IP
 }
 
 

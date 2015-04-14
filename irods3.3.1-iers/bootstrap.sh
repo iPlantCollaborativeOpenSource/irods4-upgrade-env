@@ -112,5 +112,4 @@ then
     setup_irods
 fi
 
-bash
-
+tail -f /home/irods/iRODS/server/log/rodsLog.*
