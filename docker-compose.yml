@@ -1,15 +1,31 @@
 dbms:
-  build:      .
+  build: .
   dockerfile: irods3.3.1-dbms.Dockerfile
-
-icommands:
-  build:      .
-  dockerfile: icommands3.3.1.Dockerfile
+  env_file: env.properties
+  hostname: dbms
 
 ies:
-  build:      .
+  build: .
   dockerfile: irods3.3.1-ies.Dockerfile
+  env_file: env.properties
+  hostname: ies
+  links:
+    - dbms
+  tty: true
 
 rs:
-  build:      .
+  build: .
   dockerfile: irods3.3.1-rs.Dockerfile
+  env_file: env.properties
+  hostname: rs
+  links:
+    - ies
+  tty: true
+
+icommands:
+  build: .
+  dockerfile: icommands3.3.1.Dockerfile
+  env_file: env.properties
+  links:
+    - ies
+    - rs

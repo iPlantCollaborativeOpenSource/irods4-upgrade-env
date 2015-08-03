@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "IES_NAME" ]
+if [ -z "$IES_NAME" ]
 then
     echo "A container needs to be linked to 'ies'" 1>&2
     exit 1
@@ -112,4 +112,4 @@ then
     setup_irods
 fi
 
-tail -f /home/irods/iRODS/server/log/rodsLog.*
+bash

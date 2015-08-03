@@ -6,15 +6,15 @@ then
     exit 1
 fi
 
-if [ -z "$DB_PASSWORD" ]
+if [ -z "$POSTGRES_PASSWORD" ]
 then
-    echo "The environment variable DB_PASSWORD wasn't set" 1>&2
+    echo "The environment variable POSTGRES_PASSWORD wasn't set" 1>&2
     exit 1
 fi
 
-if [ -z "$DB_USER" ]
+if [ -z "$POSTGRES_USER" ]
 then
-    DB_USER=irods
+    POSTGRES_USER=irods
 fi
 
 if [ -z "$ADMIN_USER" ]
@@ -45,8 +45,8 @@ function mk_irods_config ()
     echo ""
     echo "\$DATABASE_HOST = 'dbms';"
     echo "\$DATABASE_PORT = '5432';"
-    echo "\$DATABASE_ADMIN_PASSWORD = '$DB_PASSWORD';"
-    echo "\$DATABASE_ADMIN_NAME = '$DB_USER';"
+    echo "\$DATABASE_ADMIN_PASSWORD = '$POSTGRES_PASSWORD';"
+    echo "\$DATABASE_ADMIN_NAME = '$POSTGRES_USER';"
     echo ""
     echo "# iRODS configuration"
     echo ""
@@ -94,7 +94,7 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 
 while true
 do
-    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host dbms postgres $DB_USER
+    PGPASSWORD=$POSTGRES_PASSWORD psql --list --quiet --host dbms postgres $POSTGRES_USER
 
     if [ $? -eq 0 ]
     then
@@ -112,4 +112,4 @@ then
     setup_irods
 fi
 
-tail -f /home/irods/iRODS/server/log/rodsLog.*
+bash

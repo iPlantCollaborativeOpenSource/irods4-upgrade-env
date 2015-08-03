@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # The arguments are a list of resources to wait for. The script will not start the bash shell until
-# all of the listed resources are registered with iers.
+# all of the listed resources are registered with ies.
 
 
 if [ -z "$IES_NAME" ]
@@ -16,19 +16,23 @@ then
     export irodsPort=1247
 fi
 
-if [ -z "$irodsUserName" ]
+if [ -z "$ADMIN_USER" ]
 then
     export irodsUserName=rods
+else
+    export irodsUserName=$ADMIN_USER
 fi
 
-if [ -z "$irodsZone" ]
+if [ -z "$ZONE" ]
 then
     export irodsZone=tempZone
+else
+    export irodsZone=$ZONE
 fi
 
-if [ -z "$RODS_PASSWORD" ]
+if [ -z "$ADMIN_PASSWORD" ]
 then
-    RODS_PASSWORD=rods
+    ADMIN_PASSWORD=rods
 fi
 
 
@@ -44,14 +48,14 @@ do
     sleep 1
 done
 
-echo "$RODS_PASSWORD" | iinit
+echo "$ADMIN_PASSWORD" | iinit
 
-for rs in $@
-do
-    while [ "$(iadmin lr $rs)" == "No rows found" ]
+if [ -n "$RESOURCE_NAME" ]
+then
+    while [ "$(iadmin lr $RESOURCE_NAME)" == "No rows found" ]
     do
         sleep 1
     done
-done
+fi
 
 bash
