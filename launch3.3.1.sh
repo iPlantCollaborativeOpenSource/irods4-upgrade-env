@@ -10,7 +10,7 @@ docker run --detach \
            --env POSTGRES_USER=$DB_USER --env POSTGRES_PASSWORD=$PASSWORD \
 	   --hostname irods-dbms \
            --name irods-dbms \
-           irods3.3.1-dbms
+           irods4upgradeenv_dbms
 
 xterm -e docker run --interactive --tty \
                     --env ADMIN_USER=$ADMIN_USER \
@@ -21,7 +21,7 @@ xterm -e docker run --interactive --tty \
                     --hostname ies \
                     --link irods-dbms:dbms \
                     --name ies \
-                    irods3.3.1-ies &
+                    irods4upgradeenv_ies &
 
 sleep 1
 
@@ -33,7 +33,7 @@ xterm -e docker run --interactive --tty \
                     --hostname rs \
                     --link ies:ies \
 	            --name rs \
-                    irods3.3.1-rs &
+                    irods4upgradeenv_rs &
 
 while true
 do
@@ -48,6 +48,6 @@ docker run --interactive --tty \
            --env irodsUserName=$ADMIN_USER --env irodsZone=$ZONE --env RODS_PASSWORD=$PASSWORD \
            --link ies:ies \
            --name icommands \
-           icommands3.3.1
+           irods4upgradeenv_icommands
 
 ./stop.sh

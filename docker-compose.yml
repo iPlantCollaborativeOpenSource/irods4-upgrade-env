@@ -1,0 +1,15 @@
+dbms:
+  build:      .
+  dockerfile: irods3.3.1-dbms.Dockerfile
+
+icommands:
+  build:      .
+  dockerfile: icommands3.3.1.Dockerfile
+
+ies:
+  build:      .
+  dockerfile: irods3.3.1-ies.Dockerfile
+
+rs:
+  build:      .
+  dockerfile: irods3.3.1-rs.Dockerfile
