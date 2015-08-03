@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ -z "$DB_NAME" ]
+if [ -z "$DBMS_NAME" ]
 then
-    echo "An icat-db container needs to be linked to 'db'" 1>&2
+    echo "An irods-dbms container needs to be linked to 'dbms'" 1>&2
     exit 1
 fi
 
@@ -43,7 +43,7 @@ function mk_irods_config ()
     echo "\$DATABASE_HOME = '/usr/pgsql-9.0';"
     echo "\$DATABASE_LIB = '';"
     echo ""
-    echo "\$DATABASE_HOST = 'db';"
+    echo "\$DATABASE_HOST = 'dbms';"
     echo "\$DATABASE_PORT = '5432';"
     echo "\$DATABASE_ADMIN_PASSWORD = '$DB_PASSWORD';"
     echo "\$DATABASE_ADMIN_NAME = '$DB_USER';"
@@ -94,7 +94,7 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 
 while true
 do
-    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host db postgres $DB_USER
+    PGPASSWORD=$DB_PASSWORD psql --list --quiet --host dbms postgres $DB_USER
 
     if [ $? -eq 0 ]
     then

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ -z "ICAT_NAME" ]
+if [ -z "IES_NAME" ]
 then
-    echo "A container needs to be linked to 'iers'" 1>&2
+    echo "A container needs to be linked to 'ies'" 1>&2
     exit 1
 fi
 
@@ -51,7 +51,7 @@ function mk_irods_config ()
     echo "\$SVR_PORT_RANGE_END = '20399';"
     echo "\$IRODS_ADMIN_NAME = '$ADMIN_USER';"
     echo "\$IRODS_ADMIN_PASSWORD = '$ADMIN_PASSWORD';"
-    echo "\$IRODS_ICAT_HOST = 'iers';"
+    echo "\$IRODS_ICAT_HOST = 'ies';"
     echo ""
     echo "\$DB_NAME = 'ICAT';"
     echo "\$RESOURCE_NAME = '$RESOURCE_NAME';"
@@ -89,10 +89,10 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 
 setup_irods
 
-# This probably failed because iers hasn't finished starting. The icommands have been built now, so
-# we can use imiscsvrinfo to detect when iers has started.
+# This probably failed because ies hasn't finished starting. The icommands have been built now, so
+# we can use imiscsvrinfo to detect when ies has started.
 sudo -H -u irods sh -c '
-    export irodsHost=iers;
+    export irodsHost=ies;
     export irodsPort=1247;
     while true
     do
@@ -112,4 +112,4 @@ then
     setup_irods
 fi
 
-bash
+tail -f /home/irods/iRODS/server/log/rodsLog.*
