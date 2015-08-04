@@ -15,6 +15,9 @@ RUN chmod a+x /bootstrap.sh
 RUN useradd --create-home --system irods
 
 RUN tar --get --gzip --directory /home/irods --file irods3.3.1.tgz
+
+VOLUME /home/irods/iRODS/Vault
+
 RUN chown --recursive irods:irods /home/irods
 
 EXPOSE 1247

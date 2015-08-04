@@ -83,6 +83,8 @@ function setup_irods ()
     sudo -H -u irods sh -c "cd /home/irods/iRODS; yes | ./irodssetup"
 }
 
+# Ensure Vault is owned by irods
+chown irods:irods /home/irods/iRODS/Vault
 
 mk_irods_config > /home/irods/iRODS/config/irods.config
 chown irods:irods /home/irods/iRODS/config/irods.config

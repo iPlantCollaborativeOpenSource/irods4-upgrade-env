@@ -1,8 +1,22 @@
+dbmsdata:
+  build: .
+  dockerfile: dbms-data.Dockerfile
+  volumes:
+    - /dbms-data:/var/lib/postgresql/data
+
+rsdata:
+  build: .
+  dockerfile: rs-data.Dockerfile
+  volumes:
+    - /rs-data:/home/irods/iRODS/Vault
+
 dbms:
   build: .
   dockerfile: irods3.3.1-dbms.Dockerfile
   env_file: env.properties
   hostname: dbms
+  volumes_from:
+    - dbmsdata
 
 ies:
   build: .
@@ -21,6 +35,8 @@ rs:
   links:
     - ies
   tty: true
+  volumes_from:
+    - rsdata
 
 icommands:
   build: .
