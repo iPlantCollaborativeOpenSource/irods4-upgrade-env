@@ -15,12 +15,11 @@ RUN yum install -y gcc gcc-c++ make perl.x86_64 postgresql90-server sudo unixODB
 
 RUN ln -s /usr/lib64/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.so
 
-COPY irods3.3.1-ies/bootstrap.sh /
-COPY scripts/add-host.sh /
+COPY bootstrap.sh /
 RUN chmod a+x /*.sh
 
 RUN adduser -r --create-home irods
-COPY irods3.3.1-ies/odbc.ini /home/irods/.odbc.ini
+COPY odbc.ini /home/irods/.odbc.ini
 RUN tar --get --gzip --directory /home/irods --file irods3.3.1.tgz
 RUN chown -R irods:irods /home/irods
 

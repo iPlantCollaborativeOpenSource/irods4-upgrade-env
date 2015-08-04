@@ -11,16 +11,14 @@ rsdata:
     - /rs-data:/home/irods/iRODS/Vault
 
 dbms:
-  build: .
-  dockerfile: irods3.3.1-dbms.Dockerfile
+  build: irods3.3.1-dbms
   env_file: env.properties
   hostname: dbms
   volumes_from:
     - dbmsdata
 
 ies:
-  build: .
-  dockerfile: irods3.3.1-ies.Dockerfile
+  build: irods3.3.1-ies
   env_file: env.properties
   hostname: ies
   links:
@@ -28,8 +26,7 @@ ies:
   tty: true
 
 rs:
-  build: .
-  dockerfile: irods3.3.1-rs.Dockerfile
+  build: irods3.3.1-rs
   env_file: env.properties
   hostname: rs
   links:
@@ -39,8 +36,7 @@ rs:
     - rsdata
 
 icommands:
-  build: .
-  dockerfile: icommands3.3.1.Dockerfile
+  build: icommands3.3.1
   env_file: env.properties
   links:
     - ies
