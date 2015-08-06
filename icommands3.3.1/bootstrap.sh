@@ -4,12 +4,7 @@
 # all of the listed resources are registered with ies.
 
 
-if [ -z "$IES_NAME" ]
-then
-    export irodsHost=localhost
-else
-    export irodsHost=ies
-fi
+export irodsHost=ies
 
 if [ -z "$irodsPort" ]
 then

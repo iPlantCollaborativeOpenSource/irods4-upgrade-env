@@ -23,14 +23,15 @@ ies:
   hostname: ies
   links:
     - dbms
+    - rs
+  ports:
+    - "1247:1247"
   tty: true
 
 rs:
   build: irods3.3.1-rs
   env_file: env.properties
   hostname: rs
-  links:
-    - ies
   tty: true
   volumes_from:
     - rsdata
@@ -40,4 +41,3 @@ icommands:
   env_file: env.properties
   links:
     - ies
-    - rs

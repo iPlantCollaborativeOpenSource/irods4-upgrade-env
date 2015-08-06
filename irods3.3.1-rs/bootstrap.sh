@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ -z "$IES_NAME" ]
-then
-    echo "A container needs to be linked to 'ies'" 1>&2
-    exit 1
-fi
-
 if [ -z "$RESOURCE_NAME" ]
 then
     echo "The RESOURCE_NAME environment variables needs to be set" 1>&2
@@ -82,6 +76,11 @@ function setup_irods ()
 {
     sudo -H -u irods sh -c "cd /home/irods/iRODS; yes | ./irodssetup"
 }
+
+
+# Add docker host IP address to /etc/hosts and identify it as ies.
+iesIP=$(ip route | awk '/default/ { print $3 }')
+echo "$iesIP	ies" >> /etc/hosts
 
 # Ensure Vault is owned by irods
 chown irods:irods /home/irods/iRODS/Vault
