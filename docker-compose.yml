@@ -11,9 +11,12 @@ rsdata:
     - /rs-data:/home/irods/iRODS/Vault
 
 dbms:
-  image: "postgres:9.3"
-  env_file: env.properties
+  build: irods3.3.1-dbms
   hostname: dbms
+  env_file: env.properties
+  mem_limit: 2g
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
   volumes_from:
     - dbmsdata
 
