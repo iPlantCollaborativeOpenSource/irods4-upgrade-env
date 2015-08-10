@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# Customize postgresql.conf
+
 sbMem=128MB
 ecSize=128MB
 

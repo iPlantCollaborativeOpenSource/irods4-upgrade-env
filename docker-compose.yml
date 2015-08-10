@@ -26,7 +26,7 @@ ies:
     - dbms
     - rs
   ports:
-    - "1247:1247"
+    - 1247:1247
   tty: true
 
 rs:
