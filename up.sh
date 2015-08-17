@@ -11,6 +11,12 @@ dbms_exec ()
 }
 
 
+db_cmd ()
+{
+  dbms_exec psql --command=\"$@\"
+}
+
+
 wait_for_dbms ()
 {
   while ! dbms_exec psql --list 2> /dev/null >&2
@@ -22,4 +28,6 @@ wait_for_dbms ()
 
 docker-compose up -d --no-recreate ies
 wait_for_dbms
-dbms_exec psql --command=\"CREATE USER icat_reader WITH PASSWORD \'password\'\"
+db_cmd CREATE USER icat_reader WITH PASSWORD \'password\'
+db_cmd CREATE USER icat_reader_mirrors WITH CONNECTION LIMIT 250 PASSWORD \'password\'
+
