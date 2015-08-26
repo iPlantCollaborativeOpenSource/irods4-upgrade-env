@@ -8,16 +8,15 @@ source env.properties
 readonly DBMS_CONTAINER=${PROJECT_NAME}_dbms_1
 
 
-dbms_psql () {
-  eval "docker exec --user postgres $DBMS_CONTAINER psql $@"
+dbms_psql () 
+{      
+  docker exec --user postgres $DBMS_CONTAINER psql "$@"
 }
 
 
 query_icat () 
 {
-  cmd="$1"
-  echo $1
-  dbms_psql --command=\"$cmd\" ICAT
+  dbms_psql "--command=$1" ICAT
 }
 
 
@@ -72,7 +71,7 @@ add_icat_reader()
   connLimit=$3
 
   query_icat "CREATE USER $user WITH CONNECTION LIMIT $connLimit PASSWORD '$password'"
-  query_icat "GRANT SELECT ON ALL TABLES IN SCHEMA \"ICAT\" TO $user" 
+  query_icat "GRANT SELECT ON ALL TABLES IN SCHEMA public TO $user" 
 }
 
 
