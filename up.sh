@@ -6,6 +6,7 @@
 source env.properties
 
 readonly DBMS_CONTAINER=${PROJECT_NAME}_dbms_1
+readonly IES_CONTAINER=${PROJECT_NAME}_ies_1
 
 
 dbms_psql () 
@@ -75,10 +76,16 @@ add_icat_reader()
 }
 
 
+prepare_dbms()
+{
+  wait_for_postgres
+  wait_for_icat
+  add_icat_reader icat_reader password 100
+  add_icat_reader icat_reader_mirrors password 250
+  create_indices
+}
+
+
 docker-compose --project-name $PROJECT_NAME up -d --no-recreate ies
-wait_for_postgres
-wait_for_icat
-add_icat_reader icat_reader password 100
-add_icat_reader icat_reader_mirrors password 250
-create_indices
+prepare_dbms
 

@@ -89,6 +89,14 @@ function setup_irods ()
 }
 
 
+sed --in-place \
+    "{
+       s|^BISQUE_HOST=.*\$|BISQUE_HOST='http://$BISQUE_HOST'|
+       s|^BISQUE_ADMIN_PASS=.*\$|BISQUE_ADMIN_PASS='$BISQUE_PASSWORD'|
+       s|^IRODS_HOST=.*\$|IRODS_HOST='irods://ies'|
+     }" \
+    /home/irods/iRODS/server/bin/cmd/insert2bisque.py 
+
 mk_irods_config > /home/irods/iRODS/config/irods.config
 chown irods:irods /home/irods/iRODS/config/irods.config
 
