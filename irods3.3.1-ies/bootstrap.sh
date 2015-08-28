@@ -33,6 +33,9 @@ then
 fi
 
 
+export PGPASSWORD="$POSTGRES_PASSWORD"
+
+
 function mk_irods_config ()
 {
   echo "# Database configuration"
@@ -89,6 +92,8 @@ function setup_irods ()
 }
 
 
+uuidd
+
 mkdir /home/irods/aegisVault/UA1 /home/irods/aegisVault/ASU1
 chown -R irods:irods /home/irods/aegisVault
 
@@ -115,7 +120,7 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 
 while true
 do
-  PGPASSWORD=$POSTGRES_PASSWORD psql --list --quiet --host dbms postgres $POSTGRES_USER
+  psql --list --quiet --host dbms postgres $POSTGRES_USER
 
   if [ $? -eq 0 ]
   then
@@ -134,7 +139,7 @@ then
 fi
 
 # configure custom indices
-PGPASSWORD=$POSTGRES_PASSWORD psql --host dbms ICAT $POSTGRES_USER <<-EOSQL
+psql --host dbms ICAT $POSTGRES_USER <<-EOSQL
   CREATE INDEX idx_coll_main_coll_type ON r_coll_main (coll_type);
   CREATE INDEX idx_coll_main_parent_coll_name ON r_coll_main (parent_coll_name);
   CREATE INDEX idx_objt_access_access_type_id ON r_objt_access (access_type_id);
@@ -152,5 +157,16 @@ sudo -E -H -u irods bash -c \
      iadmin mkresc aegisASU1Res 'unix file system' archive ies /home/irods/aegisVault/ASU1
      iadmin atrg aegisRG aegisASU1Res
      ichmod -r admin:own rodsadmin /"
+
+colls=$(psql --tuples-only \
+            --host=dbms \
+            --dbname=ICAT \
+            --username=$POSTGRES_USER \
+            --command='SELECT coll_name FROM r_coll_main')
+
+for coll in $colls
+do
+  sudo -E -H -u irods imeta set -c $coll ipc_UUID $(uuidgen -t)
+done
 
 bash
