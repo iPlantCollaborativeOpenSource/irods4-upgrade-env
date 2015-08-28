@@ -1,6 +1,8 @@
 FROM centos:5
 MAINTAINER tedgin@iplantcollaborative.org
 
+ENV PATH "$PATH:/home/irods/iRODS/clients/icommands/bin"
+
 ADD http://yum.postgresql.org/9.0/redhat/rhel-5-x86_64/pgdg-centos90-9.0-5.noarch.rpm \
     pgdg-centos90-9.0-5.noarch.rpm
 ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
@@ -12,7 +14,7 @@ RUN yum install -y epel-release && \
         gcc gcc-c++ make perl.x86_64 postgresql90-server python-pika python26 sudo \
         unixODBC64-devel.x86_64 unixODBC-libs.x86_64 uuidd which \
         git && \
-    ln -s /usr/lib64/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.so && \
+    ln --symbolic /usr/lib64/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.so && \
     adduser -r --create-home irods && \
     tar --get --gzip --directory /home/irods --file irods3.3.1.tgz && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-setavu-mod.git \
@@ -27,12 +29,13 @@ COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
 COPY reConfigs/* /home/irods/iRODS/server/config/reConfigs/
 COPY bootstrap.sh /
 
-RUN ln -s /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re \ 
+RUN ln --symbolic /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re \ 
         /home/irods/iRODS/server/config/reConfigs/ipc-env.re && \
     sed --in-place 's/^reRuleSet.*$/reRuleSet ipc-custom,core/' \
         /home/irods/iRODS/server/config/server.config.in && \
-    chown -R irods:irods /home/irods && \
-    rm -rf /home/irods/iRODS/modules/setavu/.git /irods-cmd-scripts irods3.3.1.tgz \
+    mkdir --parents /home/irods/aegisVault && \
+    chown --recursive irods:irods /home/irods && \
+    rm --force --recursive /home/irods/iRODS/modules/setavu/.git /irods-cmd-scripts irods3.3.1.tgz \
         pgdg-centos90-9.0-5.noarch.rpm && \
     yum remove -y git && \
     yum clean all 
