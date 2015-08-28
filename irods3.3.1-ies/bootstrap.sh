@@ -150,6 +150,7 @@ sudo -E -H -u irods bash -c \
      iadmin atrg iplantRG demoResc
      iadmin mkresc aegisUA1Res 'unix file system' archive ies /home/irods/aegisVault/UA1
      iadmin mkresc aegisASU1Res 'unix file system' archive ies /home/irods/aegisVault/ASU1
-     iadmin atrg aegisRG aegisASU1Res"
+     iadmin atrg aegisRG aegisASU1Res
+     ichmod -r admin:own rodsadmin /"
 
 bash
