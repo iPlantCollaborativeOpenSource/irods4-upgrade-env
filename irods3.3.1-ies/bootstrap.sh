@@ -97,6 +97,16 @@ sed --in-place \
      }" \
     /home/irods/iRODS/server/bin/cmd/insert2bisque.py 
 
+sed --in-place \
+    "{
+       s/^ipc_AMQP_HOST .*\$/ipc_AMQP_HOST = $AMQP_HOST/
+       s/^ipc_AMQP_PORT .*\$/ipc_AMQP_PORT = $AMQP_PORT/
+       s/^ipc_AMQP_USER .*\$/ipc_AMQP_USER = $AMQP_USER/
+       s/^ipc_AMQP_PASSWORD .*\$/ipc_AMQP_PASSWORD = $AMQP_PASSWORD/
+       s/^ipc_RODSADMIN .*\$/ipc_RODSADMIN = $ADMIN_USER/
+     }" \
+    /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re
+
 mk_irods_config > /home/irods/iRODS/config/irods.config
 chown irods:irods /home/irods/iRODS/config/irods.config
 
@@ -119,5 +129,13 @@ if [ $? -ne 0 ]
 then
     setup_irods
 fi
+
+sudo -H -u irods sh -c \
+    "export PATH=$PATH:/home/irods/iRODS/clients/icommands/bin
+     mkdir /home/irods/aegisVault/UA1 /home/irods/aegisVault/ASU1
+     iadmin atrg iplantRG demoResc
+     iadmin mkresc aegisUA1Res 'unix file system' archive ies /home/irods/aegisVault/UA1
+     iadmin mkresc aegisASU1Res 'unix file system' archive ies /home/irods/aegisVault/ASU1
+     iadmin atrg aegisRG aegisASU1Res"
 
 bash

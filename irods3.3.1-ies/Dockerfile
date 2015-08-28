@@ -5,8 +5,6 @@ ADD http://yum.postgresql.org/9.0/redhat/rhel-5-x86_64/pgdg-centos90-9.0-5.noarc
     pgdg-centos90-9.0-5.noarch.rpm
 ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
 
-COPY bootstrap.sh /
-
 RUN yum install -y epel-release && \
     yum install -y --nogpgcheck /pgdg-centos90-9.0-5.noarch.rpm && \
     yum update -y && \
@@ -19,20 +17,25 @@ RUN yum install -y epel-release && \
     tar --get --gzip --directory /home/irods --file irods3.3.1.tgz && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-setavu-mod.git \
         /home/irods/iRODS/modules/setavu && \
-    rm -rf /home/irods/iRODS/modules/setavu/.git && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-cmd-scripts.git && \
     cp /irods-cmd-scripts/amqptopicsend.py /irods-cmd-scripts/generateuuid.sh \
-        /home/irods/iRODS/server/bin/cmd/ && \
-    rm -rf /irods-cmd-scripts && \
-    yum remove -y git && \
-    yum clean all && \
-    rm -f irods3.3.1.tgz pgdg-centos90-9.0-5.noarch.rpm
+        /home/irods/iRODS/server/bin/cmd/ 
 
 COPY collection.c /home/irods/iRODS/server/core/src/
 COPY odbc.ini /home/irods/.odbc.ini
 COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
+COPY reConfigs/* /home/irods/iRODS/server/config/reConfigs/
+COPY bootstrap.sh /
 
-RUN chown -R irods:irods /home/irods
+RUN ln -s /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re \ 
+        /home/irods/iRODS/server/config/reConfigs/ipc-env.re && \
+    sed --in-place 's/^reRuleSet.*$/reRuleSet ipc-custom,core/' \
+        /home/irods/iRODS/server/config/server.config.in && \
+    chown -R irods:irods /home/irods && \
+    rm -rf /home/irods/iRODS/modules/setavu/.git /irods-cmd-scripts irods3.3.1.tgz \
+        pgdg-centos90-9.0-5.noarch.rpm && \
+    yum remove -y git && \
+    yum clean all 
 
 EXPOSE 1247
 
