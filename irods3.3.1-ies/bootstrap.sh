@@ -133,14 +133,6 @@ then
   setup_irods
 fi
 
-# Configure iPlant resources
-sudo -E -H -u irods bash -c \
-    "echo 'export PATH=\$PATH:/home/irods/iRODS/clients/icommands/bin' >> /home/irods/.bashrc
-     iadmin atrg iplantRG demoResc
-     iadmin mkresc aegisUA1Res 'unix file system' archive ies /home/irods/aegisVault/UA1
-     iadmin mkresc aegisASU1Res 'unix file system' archive ies /home/irods/aegisVault/ASU1
-     iadmin atrg aegisRG aegisASU1Res"
-
 # configure custom indices
 PGPASSWORD=$POSTGRES_PASSWORD psql --host dbms ICAT $POSTGRES_USER <<-EOSQL
   CREATE INDEX idx_coll_main_coll_type ON r_coll_main (coll_type);
@@ -151,5 +143,13 @@ PGPASSWORD=$POSTGRES_PASSWORD psql --host dbms ICAT $POSTGRES_USER <<-EOSQL
   CREATE INDEX idx_user_main_user_type_name ON r_user_main (user_type_name);
   CREATE INDEX idx_user_password_user_id ON r_user_password (user_id);
 EOSQL
+
+sudo -E -H -u irods bash -c \
+    "echo 'export PATH=\$PATH:/home/irods/iRODS/clients/icommands/bin' >> /home/irods/.bashrc
+     /home/irods/init-specific-queries.sh
+     iadmin atrg iplantRG demoResc
+     iadmin mkresc aegisUA1Res 'unix file system' archive ies /home/irods/aegisVault/UA1
+     iadmin mkresc aegisASU1Res 'unix file system' archive ies /home/irods/aegisVault/ASU1
+     iadmin atrg aegisRG aegisASU1Res"
 
 bash

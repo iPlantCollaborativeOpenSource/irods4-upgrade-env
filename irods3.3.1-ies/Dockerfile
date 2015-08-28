@@ -27,6 +27,7 @@ COPY collection.c /home/irods/iRODS/server/core/src/
 COPY odbc.ini /home/irods/.odbc.ini
 COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
 COPY reConfigs/* /home/irods/iRODS/server/config/reConfigs/
+COPY init-specific-queries.sh /home/irods/
 COPY bootstrap.sh /
 
 RUN ln --symbolic /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re \ 
