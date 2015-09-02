@@ -56,7 +56,7 @@ chown -R irods:irods /home/irods/aegisVault
 sed --in-place \
     "{ 
        s|^BISQUE_HOST=.*\$|BISQUE_HOST='http://$BISQUE_HOST'|
-       s|^BISQUE_ADMIN_PASS=.*\$|BISQUE_ADMIN_PASS='$BISQUE_PASSWORD'|
+       s|^BISQUE_ADMIN_PASS=.*\$|BISQUE_ADMIN_PASS='$BISQUE_SERVICE_PASSWORD'|
        s|^IRODS_HOST=.*\$|IRODS_HOST='irods://ies'|
      }" \
     /home/irods/iRODS/server/bin/cmd/insert2bisque.py 
@@ -159,16 +159,20 @@ psql --host dbms ICAT $POSTGRES_USER <<EOSQL
   CREATE INDEX idx_user_password_user_id ON r_user_password (user_id);
 EOSQL
 
-# initialisd the specific queries, add the iPlant resources and resource groups, and give the 
-# rodsadmin group ownership of everything
 su - irods <<EOS
+  # Initial the specific queries
   /home/irods/init-specific-queries.sh
+
+  # Give rodsadmin group ownership of everything
+  ichmod -r admin:own rodsadmin /
+
+  # Create resources and resource groups
   iadmin atrg iplantRG demoResc
   iadmin mkresc aegisUA1Res 'unix file system' archive ies /home/irods/aegisVault/UA1
   iadmin mkresc aegisASU1Res 'unix file system' archive ies /home/irods/aegisVault/ASU1
   iadmin atrg aegisRG aegisASU1Res
-  ichmod -r admin:own rodsadmin /
 
+  # Generate UUIDs for all collections
   colls=\$(psql --tuples-only \
                 --host=dbms \
                 --dbname=ICAT \
@@ -179,6 +183,18 @@ su - irods <<EOS
   do
     imeta set -c \$coll ipc_UUID \$(uuidgen -t)
   done
+
+  # Create required service accounts
+  iadmin mkuser anonymous rodsuser
+
+  iadmin mkuser $BISQUE_USER rodsuser
+  iadmin moduser $BISQUE_USER password '$BISQUE_PASSWORD'
+
+  iadmin mkuser $COGE_USER rodsuser
+  iadmin moduser $COGE_USER password '$COGE_PASSWORD'
+
+  iadmin mkuser $DE_USER rodsadmin
+  iadmin moduser $DE_USER password '$DE_PASSWORD'
 EOS
 
 echo ready
