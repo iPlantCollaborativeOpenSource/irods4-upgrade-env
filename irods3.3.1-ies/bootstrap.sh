@@ -64,10 +64,10 @@ sed --in-place \
 # Configure the rules
 sed --in-place \
     "{
-       s/^ipc_AMQP_HOST .*\$/ipc_AMQP_HOST = $AMQP_HOST/
-       s/^ipc_AMQP_PORT .*\$/ipc_AMQP_PORT = $AMQP_PORT/
-       s/^ipc_AMQP_USER .*\$/ipc_AMQP_USER = $AMQP_USER/
-       s/^ipc_AMQP_PASSWORD .*\$/ipc_AMQP_PASSWORD = $AMQP_PASSWORD/
+       s/^ipc_AMQP_HOST .*\$/ipc_AMQP_HOST = amqp/
+       s/^ipc_AMQP_PORT .*\$/ipc_AMQP_PORT = 5672/
+       s/^ipc_AMQP_USER .*\$/ipc_AMQP_USER = $RABBITMQ_DEFAULT_USER/
+       s/^ipc_AMQP_PASSWORD .*\$/ipc_AMQP_PASSWORD = $RABBITMQ_DEFAULT_PASS/
        s/^ipc_RODSADMIN .*\$/ipc_RODSADMIN = $ADMIN_USER/
      }" \
     /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re

@@ -13,6 +13,11 @@ rsdata:
   volumes:
     - /home/irods/iRODS/Vault
 
+amqp:
+  image: rabbitmq:3.5-management
+  hostname: amqp
+  env_file: env.properties
+
 dbms:
   build: irods3.3.1-dbms
   hostname: dbms
@@ -28,6 +33,7 @@ ies:
   env_file: env.properties
   hostname: ies
   links:
+    - amqp
     - dbms
     - rs
   ports:
