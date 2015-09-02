@@ -38,7 +38,7 @@ export PGPASSWORD="$POSTGRES_PASSWORD"
 
 function setup_irods ()
 {
-  su - irods <<EOS
+su - irods <<EOS
     cd /home/irods/iRODS 
     yes | ./irodssetup
 EOS
@@ -195,6 +195,12 @@ su - irods <<EOS
 
   iadmin mkuser $DE_USER rodsadmin
   iadmin moduser $DE_USER password '$DE_PASSWORD'
+
+  # Configure /iplant/home/shared collection
+  imv /iplant/home/public /iplant/home/shared
+  ichmod read public /iplant/home /iplant/home/shared
+  imv /iplant/trash/home/public /iplant/trash/home/shared
+  ichmod null public /iplant/trash/home/shared  
 EOS
 
 echo ready
