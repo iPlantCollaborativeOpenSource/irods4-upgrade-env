@@ -22,59 +22,12 @@ then
 fi
 
 
-function mk_irods_config ()
-{
-    echo "# Database configuration"
-    echo ""
-    echo "\$DATABASE_TYPE = '';"
-    echo "\$DATABASE_ODBC_TYPE = '';"
-    echo "\$DATABASE_EXCLUSIVE_TO_IRODS = '0';"
-    echo "\$DATABASE_HOME = '';"
-    echo "\$DATABASE_LIB = '';"
-    echo ""
-    echo "\$DATABASE_HOST = '';"
-    echo "\$DATABASE_PORT = '';"
-    echo "\$DATABASE_ADMIN_PASSWORD = '';"
-    echo "\$DATABASE_ADMIN_NAME = '';"
-    echo ""
-    echo "# iRODS configuration"
-    echo ""
-    echo "\$IRODS_HOME = '/home/irods/iRODS';"
-    echo "\$IRODS_PORT = '1247';"
-    echo "\$SVR_PORT_RANGE_START = '20000';"
-    echo "\$SVR_PORT_RANGE_END = '20399';"
-    echo "\$IRODS_ADMIN_NAME = '$ADMIN_USER';"
-    echo "\$IRODS_ADMIN_PASSWORD = '$ADMIN_PASSWORD';"
-    echo "\$IRODS_ICAT_HOST = 'ies';"
-    echo ""
-    echo "\$DB_NAME = 'ICAT';"
-    echo "\$RESOURCE_NAME = '$RESOURCE_NAME';"
-    echo "\$RESOURCE_DIR = '/home/irods/iRODS/Vault';"
-    echo "\$ZONE_NAME = '$ZONE';"
-    echo "\$DB_KEY = '123';"
-    echo ""
-    echo "\$GSI_AUTH = '0';"
-    echo "\$GLOBUS_LOCATION = '';"
-    echo "\$GSI_INSTALL_TYPE = '';"
-    echo ""
-    echo "\$KRB_AUTH = '0';"
-    echo "\$KRB_LOCATION = '';"
-    echo ""
-    echo "# NCCS Audit Extensions"
-    echo ""
-    echo "\$AUDIT_EXT = '0';"
-    echo ""
-    echo "# UNICODE"
-    echo ""
-    echo "\$UNICODE = '0';"
-    echo ""
-    echo "return 1;"
-}
-
-
 function setup_irods ()
 {
-    sudo -H -u irods sh -c "cd /home/irods/iRODS; yes | ./irodssetup"
+su - irods <<EOS
+    cd /home/irods/iRODS 
+    yes | ./irodssetup
+EOS
 }
 
 
@@ -85,26 +38,77 @@ echo "$iesIP	ies" >> /etc/hosts
 # Ensure Vault is owned by irods
 chown irods:irods /home/irods/iRODS/Vault
 
-mk_irods_config > /home/irods/iRODS/config/irods.config
+cat > /home/irods/iRODS/config/irods.config <<-EOS
+  # Database configuration
+   
+  \$DATABASE_TYPE = '';
+  \$DATABASE_ODBC_TYPE = '';
+  \$DATABASE_EXCLUSIVE_TO_IRODS = '0';
+  \$DATABASE_HOME = '';
+  \$DATABASE_LIB = '';
+   
+  \$DATABASE_HOST = '';
+  \$DATABASE_PORT = '';
+  \$DATABASE_ADMIN_PASSWORD = '';
+  \$DATABASE_ADMIN_NAME = '';
+   
+  # iRODS configuration
+  
+  \$IRODS_HOME = '/home/irods/iRODS';
+  \$IRODS_PORT = '1247';
+  \$SVR_PORT_RANGE_START = '20000';
+  \$SVR_PORT_RANGE_END = '20399';
+  \$IRODS_ADMIN_NAME = '$ADMIN_USER';
+  \$IRODS_ADMIN_PASSWORD = '$ADMIN_PASSWORD';
+  \$IRODS_ICAT_HOST = 'ies';
+    
+  \$DB_NAME = 'ICAT';
+  \$RESOURCE_NAME = '$RESOURCE_NAME';
+  \$RESOURCE_DIR = '/home/irods/iRODS/Vault';
+  \$ZONE_NAME = '$ZONE';
+  \$DB_KEY = '123';
+  
+  \$GSI_AUTH = '0';
+  \$GLOBUS_LOCATION = '';
+  \$GSI_INSTALL_TYPE = '';
+    
+  \$KRB_AUTH = '0';
+  \$KRB_LOCATION = '';
+  
+  # NCCS Audit Extensions
+  
+  \$AUDIT_EXT = '0';
+    
+  # UNICODE
+  
+  \$UNICODE = '0';
+
+  return 1;
+EOS
+
 chown irods:irods /home/irods/iRODS/config/irods.config
-su - irods --command="echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> /home/irods/.bashrc"
+
+# Need to do this as irods to ensure the default .bashrc has been created
+su - irods <<EOS
+echo '
+export PATH=\$PATH:\$HOME/iRODS/clients/icommands/bin
+export LD_LIBRARY_PATH=/usr/local/lib' \
+    >> /home/irods/.bashrc
+EOS
 
 setup_irods
 
 # This probably failed because ies hasn't finished starting. The icommands have been built now, so
 # we can use imiscsvrinfo to detect when ies has started.
-sudo -H -u irods sh -c '
-    export irodsHost=ies;
-    export irodsPort=1247;
-    while true
-    do
-        /home/irods/iRODS/clients/icommands/bin/imiscsvrinfo
-        if [ $? -eq 0 ]
-        then
-            break
-        fi
-        sleep 1
-    done'
+su - irods <<EOS
+  export irodsHost=ies
+  export irodsPort=1247
+
+  until \$(imiscsvrinfo >/dev/null)
+  do
+    sleep 1
+  done
+EOS
 
 setup_irods
 
