@@ -116,7 +116,7 @@ cat >/home/irods/iRODS/config/irods.config <<-EOS
   
   # UNICODE
   
-  \$UNICODE = '0';
+  \$UNICODE = '1';
   
   return 1;
 EOS
