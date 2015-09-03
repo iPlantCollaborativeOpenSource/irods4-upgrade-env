@@ -122,18 +122,18 @@ cat >/home/irods/iRODS/config/irods.config <<-EOS
 EOS
 
 chown irods:irods /home/irods/iRODS/config/irods.config
-su - irods --command="echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> /home/irods/.bashrc"
+
+# Need to do this as irods to ensure the default .bashrc has been created
+su - irods <<EOS
+echo '
+export PATH=\$PATH:\$HOME/iRODS/clients/icommands/bin
+export LD_LIBRARY_PATH=/usr/local/lib' \
+            >> /home/irods/.bashrc
+EOS
 
 # Wait for the DBMS to be ready
-while true
+until $(psql --list --quiet --host dbms postgres $POSTGRES_USER >/dev/null)
 do
-  psql --list --quiet --host dbms postgres $POSTGRES_USER
-
-  if [ $? -eq 0 ]
-  then
-    break
-  fi
-
   sleep 1
 done
 
@@ -144,10 +144,6 @@ if [ $? -ne 0 ]
 then
   setup_irods
 fi
-
-# Add icommands to PATH
-su - irods \
-    --command="echo 'export PATH=\$PATH:\$HOME/iRODS/clients/icommands/bin' >> /home/irods/.bashrc"
 
 # configure custom indices
 psql --host dbms ICAT $POSTGRES_USER <<EOSQL
