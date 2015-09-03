@@ -87,6 +87,7 @@ chown irods:irods /home/irods/iRODS/Vault
 
 mk_irods_config > /home/irods/iRODS/config/irods.config
 chown irods:irods /home/irods/iRODS/config/irods.config
+su - irods --command="echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> /home/irods/.bashrc"
 
 setup_irods
 
