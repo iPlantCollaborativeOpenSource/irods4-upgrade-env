@@ -1,23 +1,21 @@
 FROM centos:6
 MAINTAINER tedgin@iplantcollaborative.org
 
-ENV LANGUAGE en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-
+# Update base
 RUN yum update --assumeyes
-RUN yum install --assumeyes gcc gcc-c++ perl sudo tar which
 
+# Prepare iRODS
 ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
 
+RUN yum install --assumeyes gcc gcc-c++ perl sudo tar whicha && \
+    useradd --create-home --system irods && \
+    tar --get --gzip --directory /home/irods --file irods3.3.1.tgz && \
+    chown --recursive irods:irods /home/irods
+
 COPY bootstrap.sh /
-RUN chmod a+x /bootstrap.sh
-
-RUN useradd --create-home --system irods
-
-RUN tar --get --gzip --directory /home/irods --file irods3.3.1.tgz
-RUN chown --recursive irods:irods /home/irods
 
 VOLUME /home/irods/iRODS/Vault
 
 EXPOSE 1247
+
 ENTRYPOINT [ "/bootstrap.sh" ]
