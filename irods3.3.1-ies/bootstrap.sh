@@ -122,6 +122,7 @@ cat >/home/irods/iRODS/config/irods.config <<-EOS
 EOS
 
 chown irods:irods /home/irods/iRODS/config/irods.config
+su - irods --command="echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> /home/irods/.bashrc"
 
 # Wait for the DBMS to be ready
 while true
