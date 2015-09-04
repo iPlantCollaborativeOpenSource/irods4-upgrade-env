@@ -25,7 +25,7 @@ RUN yum install --assumeyes gcc-c++ sudo which && \
     rm --force irods3.3.1.tgz && \
     yum clean all
 
-COPY bootstrap.sh /
+COPY irods3.3.1-rs/bootstrap.sh /
 
 VOLUME /home/irods/iRODS/Vault
 

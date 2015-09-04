@@ -47,15 +47,15 @@ RUN yum install -y epel-release && \
         --expression='s/^# *NETCDF4_API=.*/NETCDF4_API=1/' \
         /home/irods/iRODS/config/config.mk.in
 
-COPY collection.c /home/irods/iRODS/server/core/src/
+COPY irods3.3.1-ies/collection.c /home/irods/iRODS/server/core/src/
 
 RUN rm --force irods3.3.1.tgz pgdg-centos90-9.0-5.noarch.rpm
 
 # Place iPlant customizations
-COPY odbc.ini /home/irods/.odbc.ini
-COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
-COPY reConfigs/* /home/irods/iRODS/server/config/reConfigs/
-COPY init-specific-queries.sh /home/irods/
+COPY irods3.3.1-ies/odbc.ini /home/irods/.odbc.ini
+COPY irods3.3.1-ies/insert2bisque.py /home/irods/iRODS/server/bin/cmd/
+COPY irods3.3.1-ies/reConfigs/* /home/irods/iRODS/server/config/reConfigs/
+COPY irods3.3.1-ies/init-specific-queries.sh /home/irods/
 
 RUN yum install -y git && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-setavu-mod.git \
@@ -77,9 +77,9 @@ ENV PATH "$PATH:/home/irods/iRODS/clients/icommands/bin"
 # Prepare uuidd
 RUN yum install -y uuidd
 
-RUN yum clean all
+COPY irods3.3.1-ies/bootstrap.sh /
 
-COPY bootstrap.sh /
+RUN yum clean all
 
 EXPOSE 1247
 

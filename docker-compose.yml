@@ -19,7 +19,8 @@ amqp:
   env_file: env.properties
 
 dbms:
-  build: irods3.3.1-dbms
+  build: .
+  dockerfile: irods3.3.1-dbms.Dockerfile
   hostname: dbms
   env_file: env.properties
   mem_limit: 2g
@@ -29,7 +30,8 @@ dbms:
     - dbmsdata
 
 ies:
-  build: irods3.3.1-ies
+  build: .
+  dockerfile: irods3.3.1-ies.Dockerfile
   env_file: env.properties
   hostname: ies
   links:
@@ -43,7 +45,8 @@ ies:
     - aegisdata
 
 rs:
-  build: irods3.3.1-rs
+  build: .
+  dockerfile: irods3.3.1-rs.Dockerfile
   env_file: env.properties
   hostname: rs
   tty: true
@@ -51,7 +54,8 @@ rs:
     - rsdata
 
 icommands:
-  build: icommands3.3.1
+  build: .
+  dockerfile: icommands3.3.1.Dockerfile
   env_file: env.properties
   links:
     - ies
