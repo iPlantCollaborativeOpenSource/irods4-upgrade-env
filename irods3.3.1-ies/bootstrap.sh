@@ -128,7 +128,7 @@ su - irods <<EOS
 echo '
 export PATH=\$PATH:\$HOME/iRODS/clients/icommands/bin
 export LD_LIBRARY_PATH=/usr/local/lib' \
-            >> /home/irods/.bashrc
+    >> /home/irods/.bashrc
 EOS
 
 # Wait for the DBMS to be ready

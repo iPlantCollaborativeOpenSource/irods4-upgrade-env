@@ -36,7 +36,7 @@ ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
 RUN yum install -y epel-release && \
     yum install -y --nogpgcheck /pgdg-centos90-9.0-5.noarch.rpm && \
     yum install -y \
-        gcc-c++ perl.x86_64 postgresql90-server python-pika python26 sudo unixODBC64-devel.x86_64 \
+        gcc-c++ perl.x86_64 postgresql90-server sudo unixODBC64-devel.x86_64 \
         unixODBC-libs.x86_64 which && \
     ln --symbolic /usr/lib64/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.so && \
     adduser -r --create-home irods && \
@@ -47,17 +47,18 @@ RUN yum install -y epel-release && \
         --expression='s/^# *NETCDF4_API=.*/NETCDF4_API=1/' \
         /home/irods/iRODS/config/config.mk.in
 
-COPY irods3.3.1-ies/collection.c /home/irods/iRODS/server/core/src/
+COPY irods3.3.1/collection.c /home/irods/iRODS/server/core/src/
 
 RUN rm --force irods3.3.1.tgz pgdg-centos90-9.0-5.noarch.rpm
 
 # Place iPlant customizations
 COPY irods3.3.1-ies/odbc.ini /home/irods/.odbc.ini
-COPY irods3.3.1-ies/insert2bisque.py /home/irods/iRODS/server/bin/cmd/
-COPY irods3.3.1-ies/reConfigs/* /home/irods/iRODS/server/config/reConfigs/
 COPY irods3.3.1-ies/init-specific-queries.sh /home/irods/
+COPY irods3.3.1/insert2bisque.py /home/irods/iRODS/server/bin/cmd/
+COPY irods3.3.1/reConfigs/* /home/irods/iRODS/server/config/reConfigs/
 
-RUN yum install -y git && \
+RUN yum install -y python-pika python26 && \
+    yum install -y git && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-setavu-mod.git \
         /home/irods/iRODS/modules/setavu && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-cmd-scripts.git && \
@@ -75,11 +76,10 @@ RUN yum install -y git && \
 ENV PATH "$PATH:/home/irods/iRODS/clients/icommands/bin"
 
 # Prepare uuidd
-RUN yum install -y uuidd
+RUN yum install -y uuidd && \
+    yum clean all
 
 COPY irods3.3.1-ies/bootstrap.sh /
-
-RUN yum clean all
 
 EXPOSE 1247
 

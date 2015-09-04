@@ -35,9 +35,33 @@ EOS
 iesIP=$(ip route | awk '/default/ { print $3 }')
 echo "$iesIP	ies" >> /etc/hosts
 
+# Start UUID generation daemon
+uuidd
+
 # Ensure Vault is owned by irods
 chown irods:irods /home/irods/iRODS/Vault
 
+# Configure the bisque script
+sed --in-place \
+    "{  
+       s|^BISQUE_HOST=.*\$|BISQUE_HOST='http://$BISQUE_HOST'|
+       s|^BISQUE_ADMIN_PASS=.*\$|BISQUE_ADMIN_PASS='$BISQUE_SERVICE_PASSWORD'|
+       s|^IRODS_HOST=.*\$|IRODS_HOST='irods://ies'|
+     }" \
+    /home/irods/iRODS/server/bin/cmd/insert2bisque.py 
+
+# Configure the rules
+sed --in-place \
+    "{  
+       s/^ipc_AMQP_HOST .*\$/ipc_AMQP_HOST = amqp/
+       s/^ipc_AMQP_PORT .*\$/ipc_AMQP_PORT = 5672/
+       s/^ipc_AMQP_USER .*\$/ipc_AMQP_USER = $RABBITMQ_DEFAULT_USER/
+       s/^ipc_AMQP_PASSWORD .*\$/ipc_AMQP_PASSWORD = $RABBITMQ_DEFAULT_PASS/
+       s/^ipc_RODSADMIN .*\$/ipc_RODSADMIN = $ADMIN_USER/
+     }" \
+    /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re
+
+# Create the build configuration
 cat > /home/irods/iRODS/config/irods.config <<-EOS
   # Database configuration
    
@@ -89,12 +113,8 @@ EOS
 chown irods:irods /home/irods/iRODS/config/irods.config
 
 # Need to do this as irods to ensure the default .bashrc has been created
-su - irods <<EOS
-echo '
-export PATH=\$PATH:\$HOME/iRODS/clients/icommands/bin
-export LD_LIBRARY_PATH=/usr/local/lib' \
-    >> /home/irods/.bashrc
-EOS
+su - irods --command='\
+    echo "export PATH=\"\$PATH\":\"\$HOME/iRODS/clients/icommands/bin\"" >> /home/irods/.bashrc'
 
 setup_irods
 
@@ -117,5 +137,10 @@ if [ $? -ne 0 ]
 then
     setup_irods
 fi
+
+# This has to be done after setting up irods to ensure not interfere with the build
+echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib' >> /home/irods/.bashrc
+
+echo ready
 
 bash
