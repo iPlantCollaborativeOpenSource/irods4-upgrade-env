@@ -4,8 +4,7 @@ MAINTAINER tedgin@iplantcollaborative.org
 # Upgrade base packages
 RUN apt-get update && \
     apt-get --yes install apt-utils && \
-    DEBIAN_FRONTEND=noninteractive apt-get --yes upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo
+    DEBIAN_FRONTEND=noninteractive apt-get --yes upgrade 
 
 # Prepare iRODS
 ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
