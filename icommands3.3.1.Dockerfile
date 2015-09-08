@@ -14,6 +14,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get --yes install g++ make perl-modules &
     adduser --system --group irods && \
     DEBIAN_FRONTEND=noninteractive apt-get --yes purge adduser && \
     tar --get --gzip --directory /home/irods --file irods3.3.1.tgz && \
+    sed --in-place --expression='s/^# *NETCDF_CLIENT=.*/NETCDF_CLIENT=1/' \
+        /home/irods/iRODS/config/config.mk.in && \
     chown --recursive irods:irods /home/irods && \
     rm --force irods3.3.1.tgz 
 
