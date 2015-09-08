@@ -19,7 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get --yes install g++ make perl-modules &
     chown --recursive irods:irods /home/irods && \
     rm --force irods3.3.1.tgz 
 
-COPY icommands3.3.1/build-icommands.sh /
+COPY icommands-3.3.1/build-icommands.sh /
 
 RUN /build-icommands.sh
 
@@ -28,7 +28,7 @@ ENV PATH=$PATH:/home/irods/iRODS/clients/icommands/bin
 RUN DEBIAN_FRONTEND=noninteractive apt-get --yes purge g++ make perl-modules && \
     apt-get clean
 
-COPY icommands3.3.1/bootstrap.sh /
+COPY icommands-3.3.1/bootstrap.sh /
 
 WORKDIR /home/irods
 

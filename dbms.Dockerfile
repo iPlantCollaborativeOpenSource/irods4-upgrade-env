@@ -7,5 +7,5 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --yes install net-tools && \
     apt-get clean
 
-COPY irods3.3.1-dbms/set-postgresql-conf.sh /docker-entrypoint-initdb.d/
+COPY dbms/set-postgresql-conf.sh /docker-entrypoint-initdb.d/
 

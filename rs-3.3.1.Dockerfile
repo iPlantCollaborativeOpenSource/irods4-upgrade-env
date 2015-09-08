@@ -22,13 +22,13 @@ RUN yum install --assumeyes gcc-c++ sudo which && \
         --expression='s/^# *NETCDF4_API=.*/NETCDF4_API=1/' \
         /home/irods/iRODS/config/config.mk.in
 
-COPY irods3.3.1/collection.c /home/irods/iRODS/server/core/src/
+COPY 3.3.1/collection.c /home/irods/iRODS/server/core/src/
 
 RUN rm --force irods3.3.1.tgz 
 
 # Place iPlant customizations
-COPY irods3.3.1/insert2bisque.py /home/irods/iRODS/server/bin/cmd/
-COPY irods3.3.1/reConfigs/* /home/irods/iRODS/server/config/reConfigs/
+COPY 3.3.1/insert2bisque.py /home/irods/iRODS/server/bin/cmd/
+COPY 3.3.1/reConfigs/* /home/irods/iRODS/server/config/reConfigs/
 
 RUN yum install --assumeyes python-pika && \
     yum install --assumeyes git && \
@@ -51,7 +51,7 @@ ENV PATH "$PATH:/home/irods/iRODS/clients/icommands/bin"
 RUN yum install --assumeyes uuidd && \
     yum clean all
 
-COPY irods3.3.1-rs/bootstrap.sh /
+COPY rs-3.3.1/bootstrap.sh /
 
 EXPOSE 1247
 
