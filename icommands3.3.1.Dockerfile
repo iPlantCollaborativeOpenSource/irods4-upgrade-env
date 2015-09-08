@@ -1,26 +1,36 @@
 FROM debian
 MAINTAINER tedgin@iplantcollaborative.org
 
-RUN apt-get update
-RUN apt-get upgrade --fix-missing --yes
-RUN apt-get install --yes adduser g++ make perl-modules sudo
+# Upgrade base packages
+RUN apt-get update && \
+    apt-get --yes install apt-utils && \
+    DEBIAN_FRONTEND=noninteractive apt-get --yes upgrade && \
+    DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo
 
+# Prepare iRODS
 ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get --yes install g++ make perl-modules && \
+    DEBIAN_FRONTEND=noninteractive apt-get --yes install adduser && \
+    adduser --system --group irods && \
+    DEBIAN_FRONTEND=noninteractive apt-get --yes purge adduser && \
+    tar --get --gzip --directory /home/irods --file irods3.3.1.tgz && \
+    chown --recursive irods:irods /home/irods && \
+    rm --force irods3.3.1.tgz 
+
 COPY icommands3.3.1/build-icommands.sh /
-RUN chmod a+x build-icommands.sh
 
-RUN adduser --system --group irods
-RUN tar --get --gzip --directory /home/irods --file irods3.3.1.tgz
-
-RUN chown --recursive irods:irods /home/irods
 RUN /build-icommands.sh
+
 ENV PATH=$PATH:/home/irods/iRODS/clients/icommands/bin
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get --yes purge g++ make perl-modules && \
+    apt-get clean
+
 COPY icommands3.3.1/bootstrap.sh /
-RUN chmod a+x bootstrap.sh
-RUN chown irods:irods bootstrap.sh
 
 WORKDIR /home/irods
+
 USER irods
+
 ENTRYPOINT [ "/bootstrap.sh" ]
