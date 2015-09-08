@@ -8,49 +8,41 @@ export irodsHost=ies
 
 if [ -z "$irodsPort" ]
 then
-    export irodsPort=1247
+  export irodsPort=1247
 fi
 
 if [ -z "$ADMIN_USER" ]
 then
-    export irodsUserName=rods
+  export irodsUserName=rods
 else
-    export irodsUserName=$ADMIN_USER
+  export irodsUserName=$ADMIN_USER
 fi
 
 if [ -z "$ZONE" ]
 then
-    export irodsZone=tempZone
+  export irodsZone=tempZone
 else
-    export irodsZone=$ZONE
+  export irodsZone=$ZONE
 fi
 
 if [ -z "$ADMIN_PASSWORD" ]
 then
-    ADMIN_PASSWORD=rods
+  ADMIN_PASSWORD=rods
 fi
 
-
-while true
+until $(imiscsvrinfo >/dev/null)
 do
-    imiscsvrinfo
-
-    if [ $? -eq 0 ]
-    then
-        break
-    fi
-
-    sleep 1
+  sleep 1
 done
 
 echo "$ADMIN_PASSWORD" | iinit
 
 if [ -n "$RESOURCE_NAME" ]
 then
-    while [ "$(iadmin lr $RESOURCE_NAME)" == "No rows found" ]
-    do
-        sleep 1
-    done
+  while [ "$(iadmin lr $RESOURCE_NAME)" == "No rows found" ]
+  do
+    sleep 1
+  done
 fi
 
 bash
