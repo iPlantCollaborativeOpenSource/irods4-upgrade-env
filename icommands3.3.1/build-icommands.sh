@@ -1,55 +1,56 @@
 #!/bin/bash
 
-function mk_irods_config ()
-{
-    echo "# Database configuration"
-    echo ""
-    echo "\$DATABASE_TYPE = '';"
-    echo "\$DATABASE_ODBC_TYPE = '';"
-    echo "\$DATABASE_EXCLUSIVE_TO_IRODS = '0';"
-    echo "\$DATABASE_HOME = '';"
-    echo "\$DATABASE_LIB = '';"
-    echo ""
-    echo "\$DATABASE_HOST = '';"
-    echo "\$DATABASE_PORT = '';"
-    echo "\$DATABASE_ADMIN_PASSWORD = '';"
-    echo "\$DATABASE_ADMIN_NAME = '';"
-    echo ""
-    echo "# iRODS configuration"
-    echo ""
-    echo "\$IRODS_HOME = '/home/irods/iRODS';"
-    echo "\$IRODS_PORT = '1247';"
-    echo "\$SVR_PORT_RANGE_START = '';"
-    echo "\$SVR_PORT_RANGE_END = '';"
-    echo "\$IRODS_ADMIN_NAME = '';"
-    echo "\$IRODS_ADMIN_PASSWORD = '';"
-    echo "\$IRODS_ICAT_HOST = '';"
-    echo ""
-    echo "\$DB_NAME = '';"
-    echo "\$RESOURCE_NAME = '';"
-    echo "\$RESOURCE_DIR = '';"
-    echo "\$ZONE_NAME = '';"
-    echo "\$DB_KEY = '';"
-    echo ""
-    echo "\$GSI_AUTH = '0';"
-    echo "\$GLOBUS_LOCATION = '';"
-    echo "\$GSI_INSTALL_TYPE = '';"
-    echo ""
-    echo "\$KRB_AUTH = '0';"
-    echo "\$KRB_LOCATION = '';"
-    echo ""
-    echo "# NCCS Audit Extensions"
-    echo ""
-    echo "\$AUDIT_EXT = '0';"
-    echo ""
-    echo "# UNICODE"
-    echo ""
-    echo "\$UNICODE = '';"
-    echo ""
-    echo "return 1;"
-}
+cat > /home/irods/iRODS/config/irods.config <<-EOS
+  # Database configuration
+   
+  \$DATABASE_TYPE = '';
+  \$DATABASE_ODBC_TYPE = '';
+  \$DATABASE_EXCLUSIVE_TO_IRODS = '0';
+  \$DATABASE_HOME = '';
+  \$DATABASE_LIB = '';
+  
+  \$DATABASE_HOST = '';
+  \$DATABASE_PORT = '';
+  \$DATABASE_ADMIN_PASSWORD = '';
+  \$DATABASE_ADMIN_NAME = '';
+   
+  # iRODS configuration
+  
+  \$IRODS_HOME = '/home/irods/iRODS';
+  \$IRODS_PORT = '1247';
+  \$SVR_PORT_RANGE_START = '';
+  \$SVR_PORT_RANGE_END = '';
+  \$IRODS_ADMIN_NAME = '';
+  \$IRODS_ADMIN_PASSWORD = '';
+  \$IRODS_ICAT_HOST = '';
+   
+  \$DB_NAME = '';
+  \$RESOURCE_NAME = '';
+  \$RESOURCE_DIR = '';
+  \$ZONE_NAME = '';
+  \$DB_KEY = '';
+    
+  \$GSI_AUTH = '0';
+  \$GLOBUS_LOCATION = '';
+  \$GSI_INSTALL_TYPE = '';
+  
+  \$KRB_AUTH = '0';
+  \$KRB_LOCATION = '';
+   
+  # NCCS Audit Extensions
+   
+  \$AUDIT_EXT = '0';
+  
+  # UNICODE
+  
+  \$UNICODE = '';
+  
+  return 1;
+EOS
 
-
-mk_irods_config > /home/irods/iRODS/config/irods.config
 chown irods:irods /home/irods/iRODS/config/irods.config
-sudo -H -u irods sh -c "cd /home/irods/iRODS; yes | ./irodssetup"
+
+su --shell=/bin/bash - irods <<EOS 
+  cd /home/irods/iRODS 
+  yes | ./irodssetup
+EOS
