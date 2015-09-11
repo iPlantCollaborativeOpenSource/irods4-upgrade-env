@@ -1,17 +1,9 @@
-aegisdata:
+data:
   image: tianon/true
   volumes:
     - /home/irods/aegisVault
-
-dbmsdata:
-  image: tianon/true
-  volumes:
+    - /rsVault
     - /var/lib/postgresql/data
-
-rsdata:
-  image: tianon/true
-  volumes:
-    - /home/irods/iRODS/Vault
 
 amqp:
   image: rabbitmq:3.5-management
@@ -27,7 +19,7 @@ dbms:
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro 
   volumes_from:
-    - dbmsdata
+    - data
 
 ies:
   build: .
@@ -42,7 +34,7 @@ ies:
     - 1247:1247
   tty: true
   volumes_from:
-    - aegisdata
+    - data
 
 rs:
   build: .
@@ -51,7 +43,7 @@ rs:
   hostname: rs
   tty: true
   volumes_from:
-    - rsdata
+    - data
 
 icommands:
   build: .

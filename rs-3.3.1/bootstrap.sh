@@ -39,7 +39,7 @@ echo "$iesIP	ies" >> /etc/hosts
 uuidd
 
 # Ensure Vault is owned by irods
-chown irods:irods /home/irods/iRODS/Vault
+chown irods:irods /rsVault
 
 # Configure the bisque script
 sed --in-place \
@@ -88,7 +88,7 @@ cat > /home/irods/iRODS/config/irods.config <<-EOS
     
   \$DB_NAME = 'ICAT';
   \$RESOURCE_NAME = '$RESOURCE_NAME';
-  \$RESOURCE_DIR = '/home/irods/iRODS/Vault';
+  \$RESOURCE_DIR = '/rsVault';
   \$ZONE_NAME = '$ZONE';
   \$DB_KEY = '123';
   
