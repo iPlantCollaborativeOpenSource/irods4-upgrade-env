@@ -21,6 +21,14 @@ dbms:
   volumes_from:
     - data
 
+base:
+  build: .
+  dockerfile: base-3.3.1.Dockerfile
+
+server:
+  build: .
+  dockerfile: server-3.3.1.Dockerfile
+
 ies:
   build: .
   dockerfile: ies-3.3.1.Dockerfile
