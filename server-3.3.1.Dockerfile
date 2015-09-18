@@ -30,4 +30,11 @@ RUN yum install --assumeyes python-pika uuidd && \
     chown --recursive irods:irods /home/irods && \    
     yum clean all 
 
+# Set up initialization
+RUN mkdir /init-scripts
+
+COPY server-3.3.1/bootstrap.sh /
+
 EXPOSE 1247
+
+ENTRYPOINT [ "/bootstrap.sh" ]

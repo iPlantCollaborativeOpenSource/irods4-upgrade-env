@@ -25,7 +25,8 @@ wait_for_icat ()
 {
   echo waiting for ICAT database
 
-  until $(docker exec $DBMS_CONTAINER netstat -4 --listening --numeric --tcp | grep --silent 5432) 
+  until $(docker exec --interactive $DBMS_CONTAINER bash -c 'exec <>/dev/tcp/localhost/5432' \
+          2>/dev/null) 
   do
     sleep 1
   done
