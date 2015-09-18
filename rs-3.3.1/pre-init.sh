@@ -5,7 +5,7 @@ iesIP=$(ip route | awk '/default/ { print $3 }')
 echo "$iesIP  ies" >> /etc/hosts
 
 # Ensure Vault is owned by irods
-chown irods:irods /rsVault
+chown irods:irods "$RESOURCE_DIR"
 
 # Create the build configuration
 cat > /home/irods/iRODS/config/irods.config <<-EOS
@@ -34,7 +34,7 @@ cat > /home/irods/iRODS/config/irods.config <<-EOS
                                         
   \$DB_NAME = 'ICAT';
   \$RESOURCE_NAME = '$RESOURCE_NAME';
-  \$RESOURCE_DIR = '/rsVault';
+  \$RESOURCE_DIR = '$RESOURCE_DIR';
   \$ZONE_NAME = '$ZONE';
   \$DB_KEY = '123';
       

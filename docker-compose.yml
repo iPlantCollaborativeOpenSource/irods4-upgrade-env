@@ -48,6 +48,8 @@ rs:
   build: .
   dockerfile: rs-3.3.1.Dockerfile
   env_file: env.properties
+  environment:
+    RESOURCE_DIR: /rsVault
   hostname: rs
   tty: true
   volumes_from:
