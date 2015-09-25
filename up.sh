@@ -93,6 +93,15 @@ start_resources aegisasu1 aegisua1 hades lucy snoopy
 
 # Create resource groups and remove default resource
 docker exec --interactive --user irods $(container_for ies) bash <<EOS
+  for resc in aegisASU1Res lucyRes snoopyRes
+  do
+    echo waiting for resource \$resc
+    until \$(ilsresc \$resc >/dev/null)
+    do
+      sleep 1
+    done
+  done
+
   iadmin atrg iplantRG lucyRes
   iadmin atrg iplantRG snoopyRes
   iadmin atrg aegisRG aegisASU1Res
