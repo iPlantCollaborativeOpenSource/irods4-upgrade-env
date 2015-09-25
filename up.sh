@@ -5,33 +5,38 @@
 
 source env.properties
 
-readonly DBMS_CONTAINER=${PROJECT_NAME}_dbms_1
-readonly IES_CONTAINER=${PROJECT_NAME}_ies_1
 
+container_for()
+{
+  service=$1
 
-dbms_psql () 
-{      
-  docker exec --user postgres $DBMS_CONTAINER psql "$@"
+  echo ${PROJECT_NAME}_${service}_1
 }
 
 
-query_icat () 
+dbms_psql() 
+{      
+  docker exec --user postgres $(container_for dbms) psql "$@"
+}
+
+
+query_icat() 
 {
   dbms_psql "--command=$1" ICAT
 }
 
 
-wait_for_icat () 
+wait_for_service() 
 {
-  echo waiting for ICAT database
+  service=$1
+  port=$2
 
-  until $(docker exec --interactive $DBMS_CONTAINER bash -c 'exec <>/dev/tcp/localhost/5432' \
+  container=$(container_for $service)
+
+  echo waiting for service on $service
+
+  until $(docker exec --interactive $container bash -c "exec <>/dev/tcp/localhost/$port" \
           2>/dev/null) 
-  do
-    sleep 1
-  done
-
-  until $(dbms_psql --list | grep --silent ICAT)
   do
     sleep 1
   done
@@ -51,7 +56,15 @@ add_icat_reader()
 
 prepare_dbms()
 {
-  wait_for_icat
+  wait_for_service dbms 5432
+
+  echo waiting for ICAT database
+
+  until $(dbms_psql --list | grep --silent ICAT)
+  do
+    sleep 1
+  done
+
   add_icat_reader icat_reader password 100
   add_icat_reader icat_reader_mirrors password 250
 }
@@ -60,3 +73,9 @@ prepare_dbms()
 docker-compose --project-name $PROJECT_NAME up -d --no-recreate ies
 prepare_dbms
 
+wait_for_service ies 1247
+
+for service in hades lucy snoopy
+do
+  docker exec $(container_for $service) touch /IES_UP
+done

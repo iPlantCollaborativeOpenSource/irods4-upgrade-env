@@ -59,8 +59,14 @@ EOS
 chown irods:irods /home/irods/iRODS/config/irods.config
 
 # Wait for IES to become available
-until $(exec <>/dev/tcp/ies/1247)
+echo "Waiting for IES"
+
+until [ -e /IES_UP ]
 do
   sleep 1
 done
+
+rm --force /IES_UP
+
+echo "IES is up"
 
