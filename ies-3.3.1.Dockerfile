@@ -33,8 +33,7 @@ RUN ln --symbolic /usr/local/lib/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.s
 COPY ies-3.3.1/odbc.ini /home/irods/.odbc.ini
 COPY ies-3.3.1/init-specific-queries.sh /home/irods/
 
-RUN mkdir --parents /home/irods/aegisVault && \
-    chown irods:irods /home/irods/.*
+RUN chown irods:irods /home/irods/.*
 
 COPY ies-3.3.1/pre-init.sh /init-scripts/pre.sh
 COPY ies-3.3.1/post-init.sh /init-scripts/post.sh

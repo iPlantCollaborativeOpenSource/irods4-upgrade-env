@@ -1,9 +1,5 @@
 #! /bin/bash
 
-# Create aegis resource vaults
-mkdir /home/irods/aegisVault/UA1 /home/irods/aegisVault/ASU1
-chown -R irods:irods /home/irods/aegisVault
-
 # Create the build configuration
 cat >/home/irods/iRODS/config/irods.config <<-EOS  
   # Database configuration

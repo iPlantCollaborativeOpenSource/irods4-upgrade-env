@@ -4,7 +4,6 @@ data:
     - /aegisASU1Vault
     - /aegisUA1Vault
     - /hadesVault
-    - /home/irods/aegisVault
     - /lucyVault
     - /snoopyVault
     - /var/lib/postgresql/data
@@ -98,8 +97,8 @@ ies:
   env_file: env.properties
   hostname: ies
   links:
-#    - aegisasu1
-#    - aegisua1
+    - aegisasu1
+    - aegisua1
     - amqp
     - dbms
     - hades

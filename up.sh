@@ -70,12 +70,31 @@ prepare_dbms()
 }
 
 
+start_resources()
+{
+  services="$@"
+
+  for service in $services
+  do
+    docker exec $(container_for $service) touch /IES_UP
+  done
+
+  for service in $services
+  do
+    wait_for_service $service 1247
+  done
+}
+ 
+
 docker-compose --project-name $PROJECT_NAME up -d --no-recreate ies
 prepare_dbms
-
 wait_for_service ies 1247
+start_resources aegisasu1 aegisua1 hades lucy snoopy
 
-for service in hades lucy snoopy
-do
-  docker exec $(container_for $service) touch /IES_UP
-done
+# Create resource groups and remove default resource
+docker exec --interactive --user irods $(container_for ies) bash <<EOS
+  iadmin atrg iplantRG lucyRes
+  iadmin atrg iplantRG snoopyRes
+  iadmin atrg aegisRG aegisASU1Res
+  iadmin rmresc demoResc
+EOS
