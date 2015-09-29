@@ -58,6 +58,10 @@ contains one resource.
 
 Because `iclimateRG` is so simple, it is not included in the test grid.
 
+# Requirements
+
+This requires docker compose version 1.3.3 or newer.
+
 # Usage
 
 This collection of container is intented to be managed by docker compose. However, because of the 
