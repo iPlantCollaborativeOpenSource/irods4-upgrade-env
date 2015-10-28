@@ -91,8 +91,11 @@ prepare_dbms
 wait_for_service ies 1247
 start_resources aegisasu1 aegisua1 hades lucy snoopy
 
-# Create resource groups and remove default resource
 docker exec --interactive --user irods $(container_for ies) bash <<EOS
+  echo "contents" > /home/irods/test-file
+
+  iadmin atg rodsadmin ipc_admin
+
   for resc in aegisASU1Res lucyRes snoopyRes
   do
     echo waiting for resource \$resc
@@ -106,16 +109,14 @@ docker exec --interactive --user irods $(container_for ies) bash <<EOS
   iadmin atrg iplantRG snoopyRes
   iadmin atrg aegisRG aegisASU1Res
   iadmin rmresc demoResc
-EOS
 
-
-# Populate with users and data
-docker exec --interactive --user irods $(container_for ies) bash <<EOS
-  echo "contents" > /home/irods/test-file
+  imkdir /iplant/home/shared/aegis
+  iput /home/irods/test-file /iplant/home/shared/aegis/test-file
 
   for i in \$(cat <(seq 10) <(echo ☠))
   do
     user=user-\$i
+    echo creating \$user and giving data
     iadmin mkuser \$user rodsuser
     iadmin moduser \$user password password
 
@@ -131,7 +132,11 @@ docker exec --interactive --user irods $(container_for ies) bash <<EOS
     do
       clientUserName=\$user iput /home/irods/test-file /iplant/home/\${user}/nested/coll-2/file-\$f
     done
+ 
+    clientUserName=\$user iput -R hadesRes /home/irods/test-file /iplant/home/\${user}/hades-file
   done
 
   rm --force /home/irods/test-file
 EOS
+
+
