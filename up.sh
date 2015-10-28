@@ -107,3 +107,31 @@ docker exec --interactive --user irods $(container_for ies) bash <<EOS
   iadmin atrg aegisRG aegisASU1Res
   iadmin rmresc demoResc
 EOS
+
+
+# Populate with users and data
+docker exec --interactive --user irods $(container_for ies) bash <<EOS
+  echo "contents" > /home/irods/test-file
+
+  for i in \$(cat <(seq 10) <(echo ☠))
+  do
+    user=user-\$i
+    iadmin mkuser \$user rodsuser
+    iadmin moduser \$user password password
+
+    clientUserName=\$user imkdir /iplant/home/\${user}/coll
+    clientUserName=\$user imkdir /iplant/home/\${user}/coll-☠
+    clientUserName=\$user imkdir /iplant/home/\${user}/nested
+    clientUserName=\$user imkdir /iplant/home/\${user}/nested/coll-1
+    clientUserName=\$user imkdir /iplant/home/\${user}/nested/coll-2
+
+    clientUserName=\$user iput /home/irods/test-file /iplant/home/\${user}/file-☠
+
+    for f in \$(seq 100)
+    do
+      clientUserName=\$user iput /home/irods/test-file /iplant/home/\${user}/nested/coll-2/file-\$f
+    done
+  done
+
+  rm --force /home/irods/test-file
+EOS
