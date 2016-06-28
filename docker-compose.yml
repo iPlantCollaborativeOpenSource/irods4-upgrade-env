@@ -12,6 +12,9 @@ amqp:
   image: rabbitmq:3.5-management
   hostname: amqp
   env_file: env.properties
+  ports:
+    - 5672:5672
+    - 15672:15672
 
 dbms:
   build: .
@@ -23,6 +26,8 @@ dbms:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro 
   volumes_from:
     - data
+  ports: 
+    - 5432:5432
 
 base:
   build: .
@@ -79,6 +84,8 @@ lucy:
   tty: true
   volumes_from:
     - data
+  ports:
+    - 1247:1247
 
 snoopy:
   image: irods_rs
