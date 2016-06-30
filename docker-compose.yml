@@ -84,8 +84,6 @@ lucy:
   tty: true
   volumes_from:
     - data
-  ports:
-    - 1247:1247
 
 snoopy:
   image: irods_rs
