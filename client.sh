@@ -1,3 +1,5 @@
 #! /bin/bash
 
-docker-compose --project-name irods run --no-deps --rm icommands "$@" 
+source env.properties
+
+docker-compose --project-name "$PROJECT_NAME" run --no-deps --rm icommands "$@" 
