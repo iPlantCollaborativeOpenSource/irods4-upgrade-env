@@ -1,9 +1,5 @@
 #! /bin/bash
 
-# Add docker host IP address to /etc/hosts and identify it as ies.
-iesIP=$(ip route | awk '/default/ { print $3 }')
-echo "$iesIP  ies" >> /etc/hosts
-
 # Ensure Vault is owned by irods
 chown irods:irods "$RESOURCE_DIR"
 
@@ -30,7 +26,7 @@ cat > /home/irods/iRODS/config/irods.config <<-EOS
   \$SVR_PORT_RANGE_END = '20399';
   \$IRODS_ADMIN_NAME = '$ADMIN_USER';
   \$IRODS_ADMIN_PASSWORD = '$ADMIN_PASSWORD';
-  \$IRODS_ICAT_HOST = 'ies';
+  \$IRODS_ICAT_HOST = 'irods_ies_1';
                                         
   \$DB_NAME = 'ICAT';
   \$RESOURCE_NAME = '$RESOURCE_NAME';

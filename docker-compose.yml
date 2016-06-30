@@ -1,123 +1,133 @@
-data:
-  image: tianon/true
-  volumes:
-    - /aegisASU1Vault
-    - /aegisUA1Vault
-    - /hadesVault
-    - /lucyVault
-    - /snoopyVault
-    - /var/lib/postgresql/data
+---
+version: "2"
 
-amqp:
-  image: rabbitmq:3.5-management
-  hostname: amqp
-  env_file: env.properties
-  ports:
-    - 5672:5672
-    - 15672:15672
+services:
+  data:
+    image: tianon/true
+    volumes:
+      - /aegisASU1Vault
+      - /aegisUA1Vault
+      - /hadesVault
+      - /lucyVault
+      - /snoopyVault
+      - /var/lib/postgresql/data
 
-dbms:
-  build: .
-  dockerfile: dbms.Dockerfile
-  hostname: dbms
-  env_file: env.properties
-  mem_limit: 2g
-  volumes:
-    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
-  volumes_from:
-    - data
-  ports: 
-    - 5432:5432
+  amqp:
+    image: rabbitmq:3.5-management
+    hostname: amqp
+    env_file: env.properties
+    ports:
+      - 5672:5672
+      - 15672:15672
 
-base:
-  build: .
-  dockerfile: base-3.3.1.Dockerfile
+  dbms:
+    build:
+      context: .
+      dockerfile: dbms.Dockerfile
+    hostname: dbms
+    env_file: env.properties
+    mem_limit: 2g
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
+    volumes_from:
+      - data
+    ports: 
+      - 5432:5432
 
-server:
-  build: .
-  dockerfile: server-3.3.1.Dockerfile
+  base:
+    build:
+      context: .
+      dockerfile: base-3.3.1.Dockerfile
 
-rs:
-  build: .
-  dockerfile: rs-3.3.1.Dockerfile
+  server:
+    build:
+      context: .
+      dockerfile: server-3.3.1.Dockerfile
 
-aegisasu1:
-  image: irods_rs
-  hostname: aegisASU1
-  env_file: env.properties
-  environment:
-    RESOURCE_DIR: /aegisASU1Vault
-    RESOURCE_NAME: aegisASU1Res
-  tty: true
-  volumes_from:
-    - data
+  rs:
+    build:
+      context: .
+      dockerfile: rs-3.3.1.Dockerfile
 
-aegisua1:
-  image: irods_rs
-  hostname: aegisUA1
-  env_file: env.properties
-  environment:
-    RESOURCE_DIR: /aegisUA1Vault
-    RESOURCE_NAME: aegisUA1Res
-  tty: true
-  volumes_from:
-    - data
+  aegisasu1:
+    image: irods_rs
+    hostname: aegisASU1
+    env_file: env.properties
+    environment:
+      RESOURCE_DIR: /aegisASU1Vault
+      RESOURCE_NAME: aegisASU1Res
+    tty: true
+    volumes_from:
+      - data
 
-hades:
-  image: irods_rs
-  hostname: hades
-  env_file: env.properties
-  environment:
-    RESOURCE_DIR: /hadesVault
-    RESOURCE_NAME: hadesRes
-  tty: true
-  volumes_from:
-    - data
+  aegisua1:
+    image: irods_rs
+    hostname: aegisUA1
+    env_file: env.properties
+    environment:
+      RESOURCE_DIR: /aegisUA1Vault
+      RESOURCE_NAME: aegisUA1Res
+    tty: true
+    volumes_from:
+      - data
 
-lucy:
-  image: irods_rs
-  hostname: lucy
-  env_file: env.properties
-  environment:
-    RESOURCE_DIR: /lucyVault
-    RESOURCE_NAME: lucyRes
-  tty: true
-  volumes_from:
-    - data
+  hades:
+    image: irods_rs
+    hostname: hades
+    env_file: env.properties
+    environment:
+      RESOURCE_DIR: /hadesVault
+      RESOURCE_NAME: hadesRes
+    tty: true
+    volumes_from:
+      - data
 
-snoopy:
-  image: irods_rs
-  hostname: snoopy
-  env_file: env.properties
-  environment:
-    RESOURCE_DIR: /snoopyVault
-    RESOURCE_NAME: snoopyRes
-  tty: true
-  volumes_from:
-    - data
+  lucy:
+    image: irods_rs
+    hostname: lucy
+    env_file: env.properties
+    environment:
+      RESOURCE_DIR: /lucyVault
+      RESOURCE_NAME: lucyRes
+    tty: true
+    volumes_from:
+      - data
 
-ies:
-  build: .
-  dockerfile: ies-3.3.1.Dockerfile
-  env_file: env.properties
-  hostname: ies
-  links:
-    - aegisasu1
-    - aegisua1
-    - amqp
-    - dbms
-    - hades
-    - lucy
-    - snoopy
-  ports:
-    - 1247:1247
-  tty: true
-  volumes_from:
-    - data
+  snoopy:
+    image: irods_rs
+    hostname: snoopy
+    env_file: env.properties
+    environment:
+      RESOURCE_DIR: /snoopyVault
+      RESOURCE_NAME: snoopyRes
+    tty: true
+    volumes_from:
+      - data
 
-icommands:
-  build: .
-  dockerfile: icommands-3.3.1.Dockerfile
-  env_file: env.properties
-  links:
-    - ies
+  ies:
+    build:
+      context: .
+      dockerfile: ies-3.3.1.Dockerfile
+    env_file: env.properties
+    hostname: ies
+    links:
+      - aegisasu1
+      - aegisua1
+      - amqp
+      - dbms
+      - hades
+      - lucy
+      - snoopy
+    ports:
+      - 1247:1247
+    tty: true
+    volumes_from:
+      - data
+
+  icommands:
+    build:
+      context: .
+      dockerfile: icommands-3.3.1.Dockerfile
+    env_file: env.properties
+    links:
+      - ies
