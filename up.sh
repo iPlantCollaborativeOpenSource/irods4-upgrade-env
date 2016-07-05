@@ -98,7 +98,7 @@ docker exec --interactive --user irods $(container_for ies) bash <<EOS
 
   iadmin atg rodsadmin ipc_admin
 
-  for resc in aegisASU1Res lucyRes snoopyRes
+  for resc in aegisASU1Res hadesRes lucyRes snoopyRes
   do
     printf 'waiting for resource %s\n' "\$resc"
     until \$(ilsresc "\$resc" >/dev/null)
