@@ -37,8 +37,7 @@ wait_for_service()
 
   printf 'waiting for service on %s\n' "$service"
 
-  until $(docker exec --interactive "$container" bash -c "exec <>/dev/tcp/localhost/'$port'" \
-          2>/dev/null) 
+  until docker exec --interactive "$container" bash -c "exec <>/dev/tcp/localhost/'$port'" 2>/dev/null 
   do
     sleep 1
   done
@@ -51,8 +50,8 @@ add_icat_reader()
   local password="$2"
   local connLimit="$3"
 
-  query_icat "CREATE USER $user WITH CONNECTION LIMIT $connLimit PASSWORD '$password'"
-  query_icat "GRANT SELECT ON ALL TABLES IN SCHEMA public TO $user" 
+  query_icat "CREATE USER $user WITH CONNECTION LIMIT $connLimit PASSWORD '$password'" >/dev/null
+  query_icat "GRANT SELECT ON ALL TABLES IN SCHEMA public TO $user" >/dev/null
 }
 
 
@@ -62,7 +61,7 @@ prepare_dbms()
 
   printf 'waiting for ICAT database\n'
 
-  until $(dbms_psql --list | grep --silent ICAT)
+  until dbms_psql --list 2>/dev/null | grep --silent ICAT 
   do
     sleep 1
   done
