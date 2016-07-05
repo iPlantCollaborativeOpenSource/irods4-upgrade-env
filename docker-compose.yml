@@ -22,8 +22,7 @@ services:
 
   dbms:
     build:
-      context: .
-      dockerfile: dbms.Dockerfile
+      context: dbms
     hostname: dbms
     env_file: env.properties
     mem_limit: 2g
@@ -36,18 +35,15 @@ services:
 
   base:
     build:
-      context: .
-      dockerfile: base-3.3.1.Dockerfile
+      context: base-3.3.1
 
   server:
     build:
-      context: .
-      dockerfile: server-3.3.1.Dockerfile
+      context: server-3.3.1
 
   rs:
     build:
-      context: .
-      dockerfile: rs-3.3.1.Dockerfile
+      context: rs-3.3.1
 
   aegisasu1:
     image: irods_rs
@@ -106,8 +102,7 @@ services:
 
   ies:
     build:
-      context: .
-      dockerfile: ies-3.3.1.Dockerfile
+      context: ies-3.3.1
     env_file: env.properties
     hostname: ies
     links:
@@ -126,8 +121,7 @@ services:
 
   icommands:
     build:
-      context: .
-      dockerfile: icommands-3.3.1.Dockerfile
+      context: icommands-3.3.1
     env_file: env.properties
     links:
       - ies

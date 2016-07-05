@@ -8,7 +8,7 @@ RUN yum update --assumeyes && \
     useradd --create-home --system irods && \
     tar --get --gzip --directory /home/irods --file irods3.3.1.tgz 
 
-COPY base-3.3.1/collection.c /home/irods/iRODS/server/core/src/
+COPY collection.c /home/irods/iRODS/server/core/src/
 
 RUN chown --recursive irods:irods /home/irods && \
     rm --force irods3.3.1.tgz && \

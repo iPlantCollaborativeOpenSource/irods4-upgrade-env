@@ -30,11 +30,11 @@ RUN rm --force --recursive unixODBC-2.2.12 unixODBC-2.2.12.tar.gz
 RUN ln --symbolic /usr/local/lib/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.so
 
 # Place iPlant customizations
-COPY ies-3.3.1/odbc.ini /home/irods/.odbc.ini
-COPY ies-3.3.1/init-specific-queries.sh /home/irods/
+COPY odbc.ini /home/irods/.odbc.ini
+COPY init-specific-queries.sh /home/irods/
 
 RUN chown irods:irods /home/irods/.*
 
-COPY ies-3.3.1/pre-init.sh /init-scripts/pre.sh
-COPY ies-3.3.1/post-init.sh /init-scripts/post.sh
+COPY pre-init.sh /init-scripts/pre.sh
+COPY post-init.sh /init-scripts/post.sh
 

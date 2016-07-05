@@ -11,8 +11,8 @@ RUN yum install --assumeyes epel-release && \
         /home/irods/iRODS/config/config.mk.in 
 
 # Install customizations
-COPY server-3.3.1/insert2bisque.py /home/irods/iRODS/server/bin/cmd/
-COPY server-3.3.1/reConfigs/* /home/irods/iRODS/server/config/reConfigs/
+COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
+COPY reConfigs/* /home/irods/iRODS/server/config/reConfigs/
 
 RUN yum install --assumeyes python-pika uuidd && \
     yum install --assumeyes git && \
@@ -33,7 +33,7 @@ RUN yum install --assumeyes python-pika uuidd && \
 # Set up initialization
 RUN mkdir /init-scripts
 
-COPY server-3.3.1/bootstrap.sh /
+COPY bootstrap.sh /
 
 EXPOSE 1247
 
