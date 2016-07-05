@@ -3,23 +3,24 @@
 
 # This is a list of aliases for queries that used to exist in the database, but no longer do.
 # These will be removed as part of the execution of the script.
-readonly defunctQueries="
+readonly DefunctQueries='
 ilsLADataObjects
 ilsLACollections
-"
+'
 
 # The current set of specific queries along with there aliases are stored in two separate arrays.
 # A query and alias pair share a common index.
 declare -a aliases queries
 
 
-function addSQ() {
-  aliases[${#aliases[*]}]=$1
+add_sq()
+{
+  aliases[${#aliases[*]}]="$1"
   queries[${#queries[*]}]="$2"
 }
 
 
-readonly listingQueryTmpl="
+readonly ListingQueryTmpl="
 WITH user_lookup AS (SELECT u.user_id AS user_id FROM r_user_main u WHERE u.user_name = ?),
      parent      AS (SELECT c.coll_id AS coll_id, c.coll_name AS coll_name
                        FROM r_coll_main c
@@ -61,23 +62,26 @@ SELECT p.full_path, p.base_name, p.data_size, p.create_ts, p.modify_ts, p.access
   LIMIT ?
   OFFSET ?"
 
-function mkListingQuery() {
-  sortCol=$1
-  sortOrder=$2
 
-  printf "$listingQueryTmpl" "$sortCol" "$sortOrder"
+mk_listing_query() 
+{
+  local sortCol="$1"
+  local sortOrder="$2"
+
+  printf "$ListingQueryTmpl" "$sortCol" "$sortOrder"
 }
 
-addSQ IPCUserCollectionPerms "
+
+add_sq IPCUserCollectionPerms '
 SELECT a.access_type_id, u.user_name
   FROM r_coll_main c
     JOIN r_objt_access a ON c.coll_id = a.object_id
     JOIN r_user_main u ON a.user_id = u.user_id
   WHERE c.parent_coll_name = ? AND c.coll_name = ?
   LIMIT ?
-  OFFSET ?"
+  OFFSET ?'
 
-addSQ IPCUserDataObjectPerms "
+add_sq IPCUserDataObjectPerms "
 SELECT DISTINCT o.access_type_id, u.user_name
   FROM r_user_main u, r_data_main d, r_coll_main c, r_tokn_main t, r_objt_access o
   WHERE c.coll_name = ?
@@ -90,27 +94,27 @@ SELECT DISTINCT o.access_type_id, u.user_name
   LIMIT ?
   OFFSET ?"
 
-addSQ IPCEntryListingPathSortASC "$(mkListingQuery 'p.full_path' ASC)"
+add_sq IPCEntryListingPathSortASC "$(mk_listing_query 'p.full_path' ASC)"
 
-addSQ IPCEntryListingPathSortDESC "$(mkListingQuery 'p.full_path' DESC)"
+add_sq IPCEntryListingPathSortDESC "$(mk_listing_query 'p.full_path' DESC)"
 
-addSQ IPCEntryListingNameSortASC "$(mkListingQuery 'p.base_name' ASC)"
+add_sq IPCEntryListingNameSortASC "$(mk_listing_query 'p.base_name' ASC)"
 
-addSQ IPCEntryListingNameSortDESC "$(mkListingQuery 'p.base_name' DESC)"
+add_sq IPCEntryListingNameSortDESC "$(mk_listing_query 'p.base_name' DESC)"
 
-addSQ IPCEntryListingLastModSortASC "$(mkListingQuery 'p.modify_ts' ASC)"
+add_sq IPCEntryListingLastModSortASC "$(mk_listing_query 'p.modify_ts' ASC)"
 
-addSQ IPCEntryListingLastModSortDESC "$(mkListingQuery 'p.modify_ts' DESC)"
+add_sq IPCEntryListingLastModSortDESC "$(mk_listing_query 'p.modify_ts' DESC)"
 
-addSQ IPCEntryListingSizeSortASC "$(mkListingQuery 'p.data_size' ASC)"
+add_sq IPCEntryListingSizeSortASC "$(mk_listing_query 'p.data_size' ASC)"
 
-addSQ IPCEntryListingSizeSortDESC "$(mkListingQuery 'p.data_size' DESC)"
+add_sq IPCEntryListingSizeSortDESC "$(mk_listing_query 'p.data_size' DESC)"
 
-addSQ IPCEntryListingCreatedSortASC "$(mkListingQuery 'p.create_ts' ASC)"
+add_sq IPCEntryListingCreatedSortASC "$(mk_listing_query 'p.create_ts' ASC)"
 
-addSQ IPCEntryListingCreatedSortDESC "$(mkListingQuery 'p.create_ts' DESC)"
+add_sq IPCEntryListingCreatedSortDESC "$(mk_listing_query 'p.create_ts' DESC)"
 
-addSQ IPCCountDataObjectsAndCollections "
+add_sq IPCCountDataObjectsAndCollections "
 WITH user_lookup AS (SELECT u.user_id AS user_id FROM r_user_main u WHERE u.user_name = ?),
      parent      AS (SELECT c.coll_id AS coll_id, c.coll_name AS coll_name
                        FROM r_coll_main c
@@ -150,7 +154,7 @@ SELECT COUNT(p.*)
             AND c.parent_coll_name = parent.coll_name
             AND c.coll_type != 'linkPoint') AS p"
 
-addSQ IPCListCollectionsUnderPath "
+add_sq IPCListCollectionsUnderPath "
 WITH user_lookup AS (SELECT u.user_id AS user_id FROM r_user_main u WHERE u.user_name = ?),
      parent      AS (SELECT c.coll_id AS coll_id, c.coll_name AS coll_name
                        FROM r_coll_main c
@@ -172,7 +176,7 @@ SELECT c.parent_coll_name                     AS dir_name,
     AND c.parent_coll_name = parent.coll_name
     AND c.coll_type != 'linkPoint'"
 
-addSQ IPCCountDataObjectsUnderPath "
+add_sq IPCCountDataObjectsUnderPath "
 WITH user_lookup AS (SELECT u.user_id AS user_id FROM r_user_main u WHERE u.user_name = ?),
      parent      AS (SELECT c.coll_id AS coll_id, c.coll_name AS coll_name
                        FROM r_coll_main c
@@ -186,7 +190,7 @@ SELECT COUNT(*)
     parent
   WHERE u.user_id = user_lookup.user_id AND c.coll_id = parent.coll_id"
 
-addSQ IPCCountCollectionsUnderPath "
+add_sq IPCCountCollectionsUnderPath "
 WITH user_lookup AS (SELECT u.user_id AS user_id FROM r_user_main u WHERE u.user_name = ?),
      parent      AS (SELECT c.coll_id AS coll_id, c.coll_name AS coll_name
                        FROM r_coll_main c
@@ -201,7 +205,7 @@ SELECT COUNT(*)
     AND c.parent_coll_name = parent.coll_name
     AND c.coll_type != 'linkPoint'"
 
-addSQ ilsLADataObjects "
+add_sq ilsLADataObjects "
 SELECT s.coll_name, 
        s.data_name, 
        s.create_ts, 
@@ -234,7 +238,7 @@ SELECT s.coll_name,
   LIMIT ? 
   OFFSET ?"
 
-addSQ ilsLACollections "
+add_sq ilsLACollections "
 SELECT c.parent_coll_name, 
        c.coll_name, 
        c.create_ts, 
@@ -255,7 +259,7 @@ SELECT c.parent_coll_name,
   LIMIT ? 
   OFFSET ?"
 
-addSQ DataObjInCollReCur "
+add_sq DataObjInCollReCur "
 WITH coll AS (SELECT coll_id, coll_name 
                 FROM r_coll_main 
                 WHERE R_COLL_MAIN.coll_name = ? OR R_COLL_MAIN.coll_name LIKE ?)  
@@ -269,17 +273,16 @@ SELECT DISTINCT d.data_id,
   WHERE d.coll_id = ANY(ARRAY(SELECT coll_id FROM coll)) 
   ORDER BY coll_name, d.data_name, d.data_repl_num"
 
-
-for queryAlias in $defunctQueries
+for queryAlias in $DefunctQueries
 do
-  printf "deleting query %s\n" $queryAlias
-	iadmin rsq $queryAlias 2>/dev/null
+  printf 'deleting query %s\n' "$queryAlias"
+	iadmin rsq "$queryAlias" 2>/dev/null
 done
 
 for i in ${!aliases[*]}
 do
   queryAlias=${aliases[$i]}
-  printf "creating query %s\n" $queryAlias
-  iadmin rsq $queryAlias 2>/dev/null
-	iadmin asq "${queries[$i]}" $queryAlias
+  printf 'creating query %s\n' "$queryAlias"
+  iadmin rsq "$queryAlias" 2>/dev/null
+	iadmin asq "${queries[$i]}" "$queryAlias"
 done

@@ -54,7 +54,7 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 # Wait for the DBMS to be ready
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
-until $(psql --list --quiet --host dbms postgres $POSTGRES_USER >/dev/null)
+until psql --list --quiet --host dbms postgres "$POSTGRES_USER" >/dev/null
 do
   sleep 1
 done
