@@ -1,18 +1,13 @@
 FROM centos:6
 MAINTAINER tedgin@cyverse.org
 
-ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
-
-RUN yum update --assumeyes && \
-    yum install --assumeyes gcc-c++ perl tar which && \
+RUN yum install --assumeyes gcc-c++ git && \
+    yum clean all && \
     useradd --create-home --system irods && \
-    tar --get --gzip --directory /home/irods --file irods3.3.1.tgz 
-
-COPY collection.c /home/irods/iRODS/server/core/src/
-
-RUN chown --recursive irods:irods /home/irods && \
-    rm --force irods3.3.1.tgz && \
-    yum clean all
+    git clone --branch 3.3.1-custom https://github.com/cyverse/irods-legacy.git && \
+    mv irods-legacy/iRODS /home/irods/ && \
+    rm --force --recursive irods-legacy && \
+    chown --recursive irods:irods /home/irods 
  
-ENV PATH "$PATH:/home/irods/iRODS/clients/icommands/bin"
+ENV PATH "$PATH":/home/irods/iRODS/clients/icommands/bin
 
