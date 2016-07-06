@@ -1,5 +1,5 @@
 FROM irods_base
-MAINTAINER tedgin@iplantcollaborative.org
+MAINTAINER tedgin@cyverse.org
 
 # Install NetCDF Support
 RUN yum install --assumeyes epel-release && \

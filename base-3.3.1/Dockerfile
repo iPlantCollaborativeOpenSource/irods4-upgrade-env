@@ -1,5 +1,5 @@
 FROM centos:6
-MAINTAINER tedgin@iplantcollaborative.org
+MAINTAINER tedgin@cyverse.org
 
 ADD http://irods.sdsc.edu/cgi-bin/upload18.cgi/irods3.3.1.tgz irods3.3.1.tgz
 

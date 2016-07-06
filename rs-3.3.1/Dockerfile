@@ -1,4 +1,4 @@
 FROM irods_server
-MAINTAINER tedgin@iplantcollaborative.org
+MAINTAINER tedgin@cyverse.org
 
 COPY pre-init.sh /init-scripts/pre.sh

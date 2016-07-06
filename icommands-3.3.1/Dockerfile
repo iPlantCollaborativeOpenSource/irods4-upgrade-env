@@ -1,5 +1,5 @@
 FROM irods_base
-MAINTAINER tedgin@iplantcollaborative.org
+MAINTAINER tedgin@cyverse.org
 
 COPY build-icommands.sh /
 

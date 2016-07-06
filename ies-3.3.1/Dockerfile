@@ -1,5 +1,5 @@
 FROM irods_server
-MAINTAINER tedgin@iplantcollaborative.org
+MAINTAINER tedgin@cyverse.org
 
 # Install PostgreSQL
 ADD http://yum.postgresql.org/9.0/redhat/rhel-6-x86_64/pgdg-centos90-9.0-5.noarch.rpm \
