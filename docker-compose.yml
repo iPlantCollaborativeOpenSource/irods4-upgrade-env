@@ -25,9 +25,6 @@ services:
       context: dbms
     hostname: dbms
     env_file: env.properties
-    mem_limit: 2g
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
     volumes_from:
       - data
     ports: 
