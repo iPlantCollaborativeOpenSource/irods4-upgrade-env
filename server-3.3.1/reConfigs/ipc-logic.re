@@ -1,4 +1,4 @@
-# VERSION: 18
+# VERSION: 19 custom
 #
 # The iPLANT specific, environment idependent rule customizations.
 #
@@ -219,10 +219,14 @@ ensureAdminOwner(*Item) = msiSetACL('default', 'own', 'rodsadmin', *Item)
 
 isRodsAdmin(*User) {
   *isAdmin = false;
-  *res = SELECT USER_ID WHERE USER_NAME = *User AND USER_TYPE = 'rodsadmin';
-  foreach (*record in *res) {
+  if (*User == 'bisque') {
     *isAdmin = true;
-    break;
+  } else {
+    *res = SELECT USER_ID WHERE USER_NAME = *User AND USER_TYPE = 'rodsadmin';
+    foreach (*record in *res) {
+      *isAdmin = true;
+      break;
+    }
   }
   *isAdmin;
 }
@@ -280,7 +284,7 @@ removePrefix(*orig, *prefixes) {
 createOrOverwrite { applyAllRules(createOrOverwriteRules, 1, 0); }
 createOrOverwriteRules {
   or { ensureAdminOwner($objPath); }
-	or { msiSysChksumDataObj; }
+	or { msiDataObjChksum($objPath, "forceChksum=", $chksum); }
   or {
 	  if ($writeFlag == 0) {
 		  sendDataObjectAdd(assignUUID('-d', $objPath));

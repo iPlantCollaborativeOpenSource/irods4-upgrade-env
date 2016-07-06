@@ -18,15 +18,6 @@ fi
 # Start uuidd
 uuidd
 
-# Configure the bisque script
-sed --in-place \
-  "{  
-     s|^BISQUE_HOST=.*\$|BISQUE_HOST='http://$BISQUE_HOST'|
-     s|^BISQUE_ADMIN_PASS=.*\$|BISQUE_ADMIN_PASS='$BISQUE_SERVICE_PASSWORD'|
-     s|^IRODS_HOST=.*\$|IRODS_HOST='irods://ies'|
-   }" \
-  /home/irods/iRODS/server/bin/cmd/insert2bisque.py 
-
 # Configure the rules
 sed --in-place \
   "{  
@@ -47,8 +38,6 @@ if [ "$?" -ne 0 ]
 then
   setup_irods
 fi
-
-printf 'export LD_LIBRARY_PATH=/usr/local/lib\n' >> /home/irods/.bashrc
 
 if [ -e /init-scripts/post.sh ]
 then

@@ -51,6 +51,16 @@ EOS
 
 chown irods:irods /home/irods/iRODS/config/irods.config
 
+# Configure the bisque script
+sed --in-place "{  
+                  s|^BISQUE_HOST=.*\$|BISQUE_HOST='http://$BISQUE_HOST'|
+                  s|^BISQUE_ADMIN_PASS=.*\$|BISQUE_ADMIN_PASS='$BISQUE_SERVICE_PASSWORD'|
+                  s|^IRODS_HOST=.*\$|IRODS_HOST='irods://ies'|
+                }" \
+    /home/irods/iRODS/server/bin/cmd/insert2bisque.py
+
+printf 'export LD_LIBRARY_PATH=/usr/local/lib\n' >> /home/irods/.bashrc
+
 # Wait for the DBMS to be ready
 export PGPASSWORD="$POSTGRES_PASSWORD"
 

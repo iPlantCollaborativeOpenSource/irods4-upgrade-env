@@ -11,20 +11,17 @@ RUN yum install --assumeyes epel-release && \
         /home/irods/iRODS/config/config.mk.in 
 
 # Install customizations
-COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
 COPY reConfigs/* /home/irods/iRODS/server/config/reConfigs/
 
 RUN yum install --assumeyes python-pika uuidd && \
-    yum install --assumeyes git && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-setavu-mod.git \
         /home/irods/iRODS/modules/setavu && \
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-cmd-scripts.git && \
     cp /irods-cmd-scripts/amqptopicsend.py /irods-cmd-scripts/generateuuid.sh \
-        /home/irods/iRODS/server/bin/cmd/ && \
-    rm --force --recursive /home/irods/iRODS/modules/setavu/.git /irods-cmd-scripts && \
-    yum remove --assumeyes git && \
+       /home/irods/iRODS/server/bin/cmd/ && \
+    rm --force --recursive /irods-cmd-scripts && \
     ln --symbolic /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re \
-        /home/irods/iRODS/server/config/reConfigs/ipc-env.re && \
+       /home/irods/iRODS/server/config/reConfigs/ipc-env.re && \
     sed --in-place 's/^reRuleSet.*$/reRuleSet ipc-custom,core/' \
         /home/irods/iRODS/server/config/server.config.in && \
     chown --recursive irods:irods /home/irods && \    

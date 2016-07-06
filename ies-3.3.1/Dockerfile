@@ -32,8 +32,9 @@ RUN ln --symbolic /usr/local/lib/libodbcpsql.so /usr/pgsql-9.0/lib/libodbcpsql.s
 # Place iPlant customizations
 COPY odbc.ini /home/irods/.odbc.ini
 COPY init-specific-queries.sh /home/irods/
+COPY insert2bisque.py /home/irods/iRODS/server/bin/cmd/
 
-RUN chown irods:irods /home/irods/.*
+RUN chown --recursive irods:irods /home/irods/.*
 
 COPY pre-init.sh /init-scripts/pre.sh
 COPY post-init.sh /init-scripts/post.sh
