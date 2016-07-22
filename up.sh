@@ -118,7 +118,7 @@ docker exec --interactive --user irods $(container_for ies) bash <<EOS
   imkdir /iplant/home/shared/aegis
   iput /home/irods/test-file /iplant/home/shared/aegis/test-file
 
-  for i in \$(cat <(seq 10) <(echo ☠))
+  for i in \$(cat <(seq 2) <(echo ☠))
   do
     user=user-"\$i"
     printf 'creating %s and giving data\n' "\$user"
@@ -133,7 +133,7 @@ docker exec --interactive --user irods $(container_for ies) bash <<EOS
 
     clientUserName="\$user" iput /home/irods/test-file /iplant/home/"\$user"/file-☠
 
-    for f in \$(seq 100)
+    for f in \$(seq 3)
     do
       clientUserName="\$user" \\
       iput /home/irods/test-file /iplant/home/"\$user"/nested/coll-2/file-"\$f"
