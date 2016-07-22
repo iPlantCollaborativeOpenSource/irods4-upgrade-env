@@ -38,6 +38,20 @@ services:
     build:
       context: server-3.3.1
 
+  ies:
+    build:
+      context: ies-3.3.1
+    env_file: env.properties
+    hostname: ies
+    links:
+      - amqp
+      - dbms
+    ports:
+      - 1247:1247
+    tty: true
+    volumes_from:
+      - data
+
   rs:
     build:
       context: rs-3.3.1
@@ -52,6 +66,8 @@ services:
     tty: true
     volumes_from:
       - data
+    links:
+      - ies
 
   aegisua1:
     image: irods_rs
@@ -63,6 +79,8 @@ services:
     tty: true
     volumes_from:
       - data
+    links:
+      - ies
 
   hades:
     image: irods_rs
@@ -74,6 +92,8 @@ services:
     tty: true
     volumes_from:
       - data
+    links:
+      - ies
 
   lucy:
     image: irods_rs
@@ -85,6 +105,8 @@ services:
     tty: true
     volumes_from:
       - data
+    links:
+      - ies
 
   snoopy:
     image: irods_rs
@@ -96,25 +118,8 @@ services:
     tty: true
     volumes_from:
       - data
-
-  ies:
-    build:
-      context: ies-3.3.1
-    env_file: env.properties
-    hostname: ies
     links:
-      - aegisasu1
-      - aegisua1
-      - amqp
-      - dbms
-      - hades
-      - lucy
-      - snoopy
-    ports:
-      - 1247:1247
-    tty: true
-    volumes_from:
-      - data
+      - ies
 
   icommands:
     build:

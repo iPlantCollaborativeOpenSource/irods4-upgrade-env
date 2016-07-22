@@ -37,10 +37,10 @@ wait_for_service()
 
   printf 'waiting for service on %s\n' "$service"
 
-  until docker exec --interactive "$container" bash -c "exec <>/dev/tcp/localhost/'$port'" 2>/dev/null 
+  until docker exec --interactive "$container" bash -c "exec <>/dev/tcp/localhost/'$port'" 
   do
     sleep 1
-  done
+  done 2>/dev/null
 }
 
 
@@ -90,6 +90,10 @@ start_resources()
 docker-compose --project-name "$PROJECT_NAME" up -d --no-recreate ies
 prepare_dbms
 wait_for_service ies 1247
+
+docker-compose --project-name "$PROJECT_NAME" \
+        up -d --no-recreate aegisasu1 aegisua1 hades lucy snoopy
+
 start_resources aegisasu1 aegisua1 hades lucy snoopy
 
 docker exec --interactive --user irods $(container_for ies) bash <<EOS
