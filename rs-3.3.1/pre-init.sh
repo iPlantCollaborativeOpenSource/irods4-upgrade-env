@@ -57,12 +57,10 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 # Wait for IES to become available
 printf 'Waiting for IES\n'
 
-until [ -e /IES_UP ]
+until bash -c 'exec <>/dev/tcp/ies/1247'
 do
   sleep 1
-done
-
-rm --force /IES_UP
+done 2>/dev/null
 
 printf 'IES is up\n'
 

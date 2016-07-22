@@ -71,31 +71,21 @@ prepare_dbms()
 }
 
 
-start_resources()
-{
-  local services="$@"
-
-  for service in $services
-  do
-    docker exec $(container_for "$service") touch /IES_UP
-  done
-
-  for service in $services
-  do
-    wait_for_service "$service" 1247
-  done
-}
- 
-
 docker-compose --project-name "$PROJECT_NAME" up -d --no-recreate ies
 prepare_dbms
-wait_for_service ies 1247
 
 docker-compose --project-name "$PROJECT_NAME" \
         up -d --no-recreate aegisasu1 aegisua1 hades lucy snoopy
 
-start_resources aegisasu1 aegisua1 hades lucy snoopy
+docker exec --interactive $(container_for ies) bash <<EOS
+  printf 'waiting for iRODS on ies\n'
 
+  until [ -e /IRODS_READY ]
+  do
+    sleep 1
+  done
+EOS
+  
 docker exec --interactive --user irods $(container_for ies) bash <<EOS
   printf 'contents' > /home/irods/test-file
 
