@@ -5,9 +5,9 @@ cat >/home/irods/iRODS/config/irods.config <<-EOS
   # Database configuration
 
   \$DATABASE_TYPE = 'postgres';
-  \$DATABASE_ODBC_TYPE = 'unix';
+  \$DATABASE_ODBC_TYPE = 'system';
   \$DATABASE_EXCLUSIVE_TO_IRODS = '0';
-  \$DATABASE_HOME = '/usr/pgsql-9.0';
+  \$DATABASE_HOME = '/usr/pgsql-9.3';
   \$DATABASE_LIB = '';
 
   \$DATABASE_HOST = 'dbms';
