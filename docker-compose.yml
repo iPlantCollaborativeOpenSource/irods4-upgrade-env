@@ -126,4 +126,9 @@ services:
       context: icommands-3.3.1
     env_file: env.properties
     links:
+      - aegisasu1
+      - aegisua1
       - ies
+      - hades
+      - lucy
+      - snoopy
