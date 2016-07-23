@@ -71,11 +71,13 @@ prepare_dbms()
 }
 
 
+docker-compose --project-name "$PROJECT_NAME" up -d --no-recreate dbms
 docker-compose --project-name "$PROJECT_NAME" up -d --no-recreate ies
-prepare_dbms
 
 docker-compose --project-name "$PROJECT_NAME" \
         up -d --no-recreate aegisasu1 aegisua1 hades lucy snoopy
+
+prepare_dbms
 
 docker exec --interactive $(container_for ies) bash <<EOS
   printf 'waiting for iRODS on ies\n'
