@@ -15,6 +15,8 @@ su - irods <<EOS
   # Initial the specific queries
   /home/irods/init-specific-queries.sh
 
+  iadmin atg rodsadmin ipc_admin
+
   # Give rodsadmin group ownership of everything
   ichmod -r admin:own rodsadmin /
 

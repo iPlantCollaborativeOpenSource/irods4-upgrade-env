@@ -90,8 +90,6 @@ dc exec ies bash -c "
 dc exec --user irods ies bash -c "
   printf 'contents' > /home/irods/test-file
 
-  iadmin atg rodsadmin ipc_admin
-
   for resc in aegisASU1Res hadesRes lucyRes snoopyRes
   do
     printf 'waiting for resource %s\n' \"\$resc\"
