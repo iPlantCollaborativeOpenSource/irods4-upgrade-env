@@ -98,6 +98,8 @@ dc exec --user irods ies bash -c "
   iadmin mkuser '$COGE_USER' rodsuser
   iadmin moduser '$COGE_USER' password '$COGE_PASSWORD'
 
+  imkdir /iplant/home/shared/aegis
+
   for resc in aegisASU1Res hadesRes lucyRes snoopyRes
   do
     printf 'waiting for resource %s\n' \"\$resc\"
@@ -111,7 +113,6 @@ dc exec --user irods ies bash -c "
   iadmin atrg iplantRG snoopyRes
   iadmin atrg aegisRG aegisASU1Res
 
-  imkdir /iplant/home/shared/aegis
   iput /home/irods/test-file /iplant/home/shared/aegis/test-file
 
   for i in \$(cat <(seq 2) <(echo ☠))
