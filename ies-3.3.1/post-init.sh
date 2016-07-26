@@ -35,17 +35,7 @@ su - irods <<EOS
     imeta set -c \$coll ipc_UUID \$(uuidgen -t)
   done
 
-  # Create required service accounts
   iadmin mkuser anonymous rodsuser
-
-  iadmin mkuser '$BISQUE_USER' rodsuser
-  iadmin moduser '$BISQUE_USER' password '$BISQUE_PASSWORD'
-
-  iadmin mkuser '$COGE_USER' rodsuser
-  iadmin moduser '$COGE_USER' password '$COGE_PASSWORD'
-
-  iadmin mkuser '$DE_USER' rodsadmin
-  iadmin moduser '$DE_USER' password '$DE_PASSWORD'
 
   # Configure /home/shared collection
   imv '/$ZONE/home/public' '/$ZONE/home/shared'

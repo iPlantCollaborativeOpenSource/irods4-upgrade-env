@@ -90,6 +90,16 @@ dc exec ies bash -c "
 dc exec --user irods ies bash -c "
   printf 'contents' > /home/irods/test-file
 
+  # Create required service accounts
+  iadmin mkuser '$DE_USER' rodsadmin
+  iadmin moduser '$DE_USER' password '$DE_PASSWORD'
+
+  iadmin mkuser '$BISQUE_USER' rodsuser
+  iadmin moduser '$BISQUE_USER' password '$BISQUE_PASSWORD'
+
+  iadmin mkuser '$COGE_USER' rodsuser
+  iadmin moduser '$COGE_USER' password '$COGE_PASSWORD'
+
   for resc in aegisASU1Res hadesRes lucyRes snoopyRes
   do
     printf 'waiting for resource %s\n' \"\$resc\"
