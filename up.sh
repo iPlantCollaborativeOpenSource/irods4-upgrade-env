@@ -102,7 +102,6 @@ dc exec --user irods ies bash -c "
   iadmin atrg iplantRG lucyRes
   iadmin atrg iplantRG snoopyRes
   iadmin atrg aegisRG aegisASU1Res
-  iadmin rmresc demoResc
 
   imkdir /iplant/home/shared/aegis
   iput /home/irods/test-file /iplant/home/shared/aegis/test-file

@@ -20,6 +20,9 @@ su - irods <<EOS
   # Give rodsadmin group ownership of everything
   ichmod -r admin:own rodsadmin /
 
+  # Remove the default resource
+  iadmin rmresc demoResc
+
   # Generate UUIDs for all collections
   colls=\$(psql --tuples-only \
                 --host=dbms \
@@ -49,7 +52,6 @@ su - irods <<EOS
   ichmod read public '/$ZONE/home' '/$ZONE/home/shared'
   imv '/$ZONE/trash/home/public' '/$ZONE/trash/home/shared'
   ichmod null public '/$ZONE/trash/home/shared'  
-
 EOS
 
 touch /IRODS_READY
