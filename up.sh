@@ -78,17 +78,15 @@ dc-up ies
 dc-up aegisasu1 aegisua1 hades lucy snoopy
 prepare_dbms
 
-dc exec ies bash -c "
+dc exec --user irods ies bash -c "
+  printf 'contents' > /home/irods/test-file
+
   printf 'waiting for iRODS on ies\n'
 
   until [ -e /IRODS_READY ]
   do
     sleep 1
   done
-"
-
-dc exec --user irods ies bash -c "
-  printf 'contents' > /home/irods/test-file
 
   # Create required service accounts
   iadmin mkuser '$DE_USER' rodsadmin
