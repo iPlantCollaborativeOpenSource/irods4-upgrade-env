@@ -105,6 +105,7 @@ dc exec --user irods ies bash -c "
   iadmin atrg iplantRG lucyRes
   iadmin atrg iplantRG snoopyRes
   iadmin atrg aegisRG aegisASU1Res
+  iadmin atrg iclimateRG aegisUA1Res
 
   printf 'contents' > /home/irods/test-file
 
