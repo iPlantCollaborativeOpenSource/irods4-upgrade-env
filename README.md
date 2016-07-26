@@ -20,9 +20,8 @@ and `pennyRes`. The `aegisRG` group contains remote replicas of data written to
 only the `aegisUA1Res` resource.
 
 There is a largely, one-to-one mapping between resource servers and resources with one exception. 
-The server `apollo` hosts both the `apolloRes` and `homeResc` resources. We plan to move the
-files in `homeResc` to another resource and delete `homeResc` before the migration, so this 
-shouldn't need to be considered in the test grid. 
+The server `shelby` hosts both the `apolloResc` and `shelbyRes` resources. We planned to move the
+files in `apolloResc` into `shelbyRes` before the migration, but we ran out of time.
 
 The `aegisUA1Res` is special. Besides being the sole member of the `iclimateRG` resource group, all
 new data destinated for the `/iplant/home/shared/aegis` collection. This is the data that is 
