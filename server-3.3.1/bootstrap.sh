@@ -45,5 +45,6 @@ then
   bash /init-scripts/post.sh
 fi
 
+touch /IRODS_READY
 printf 'ready\n'
 bash

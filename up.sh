@@ -73,21 +73,23 @@ prepare_dbms()
 }
 
 
-dc-up dbms
-dc-up ies
 dc-up aegisasu1 aegisua1 hades lucy snoopy
 prepare_dbms
 
+
+for service in ies aegisasu1 aegisua1 hades lucy snoopy
+do
+  printf 'waiting for iRODS on %s\n' "$service"
+
+  dc exec "$service" bash -c "
+    until [ -e /IRODS_READY ]
+    do
+      sleep 1
+    done
+  "
+done
+
 dc exec --user irods ies bash -c "
-  printf 'contents' > /home/irods/test-file
-
-  printf 'waiting for iRODS on ies\n'
-
-  until [ -e /IRODS_READY ]
-  do
-    sleep 1
-  done
-
   # Create required service accounts
   iadmin mkuser '$DE_USER' rodsadmin
   iadmin moduser '$DE_USER' password '$DE_PASSWORD'
@@ -100,18 +102,11 @@ dc exec --user irods ies bash -c "
 
   imkdir /iplant/home/shared/aegis
 
-  for resc in aegisASU1Res hadesRes lucyRes snoopyRes
-  do
-    printf 'waiting for resource %s\n' \"\$resc\"
-    until \$(ilsresc \"\$resc\" >/dev/null)
-    do
-      sleep 1
-    done
-  done
-
   iadmin atrg iplantRG lucyRes
   iadmin atrg iplantRG snoopyRes
   iadmin atrg aegisRG aegisASU1Res
+
+  printf 'contents' > /home/irods/test-file
 
   iput /home/irods/test-file /iplant/home/shared/aegis/test-file
 
@@ -133,10 +128,11 @@ dc exec --user irods ies bash -c "
     for f in \$(seq 3)
     do
       clientUserName=\"\$user\" \\
-      iput /home/irods/test-file /iplant/home/\"\$user\"/nested/coll-2/file-\"\$f\"
+        iput /home/irods/test-file /iplant/home/\"\$user\"/nested/coll-2/file-\"\$f\"
     done
  
-    clientUserName=\"\$user\" iput -R hadesRes /home/irods/test-file /iplant/home/\"\$user\"/hades-file
+    clientUserName=\"\$user\" \\
+      iput -R hadesRes /home/irods/test-file /iplant/home/\"\$user\"/hades-file
   done
 
   rm --force /home/irods/test-file

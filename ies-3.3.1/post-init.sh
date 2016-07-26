@@ -44,5 +44,3 @@ su - irods <<EOS
   ichmod null public '/$ZONE/trash/home/shared'  
 EOS
 
-touch /IRODS_READY
-
