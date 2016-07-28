@@ -1,6 +1,14 @@
 FROM irods_base
 MAINTAINER tedgin@cyverse.org
 
+# Configure for ansible
+RUN yum install --assumeyes openssh-server sudo && \
+    useradd ansible && \
+    sed --in-place \
+        --expression='/## Allow root to run any commands anywhere/a\
+                      ansible\tALL=(ALL)\tALL' \
+        /etc/sudoers
+
 # Install NetCDF Support
 RUN yum install --assumeyes epel-release && \
     yum install --assumeyes netcdf-devel && \

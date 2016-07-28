@@ -74,8 +74,20 @@ prepare_dbms()
 
 
 dc-up aegisasu1 aegisua1 hades lucy snoopy
-prepare_dbms
 
+for service in ies aegisasu1 aegisua1 hades lucy snoopy
+do
+  dc exec "$service" bash -c "
+    homeDir=\$(grep --regexp \"^\$SSH_USER\" /etc/passwd | cut --delimiter : --fields 6)
+    sshDir=\"\$homeDir\"/.ssh
+    mkdir --parents \"\$sshDir\"
+    printf '%s' '$(cat id_rsa.pub)' > \"\$sshDir\"/authorized_keys
+    chown --recursive \"\$SSH_USER\":\"\$SSH_USER\" \"\$sshDir\"
+    chmod --recursive go= \"\$sshDir\"
+  "
+done
+
+prepare_dbms
 
 for service in ies aegisasu1 aegisua1 hades lucy snoopy
 do

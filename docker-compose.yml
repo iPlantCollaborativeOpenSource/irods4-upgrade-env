@@ -41,13 +41,16 @@ services:
   ies:
     build:
       context: ies-3.3.1
+    cap_add:
+      - ALL
     env_file: env.properties
+    environment:
+      SSH_PORT: 1657
+      SSH_USER: root
     hostname: ies
     links:
       - amqp
       - dbms
-    ports:
-      - 1247:1247
     tty: true
     volumes_from:
       - data
@@ -58,11 +61,15 @@ services:
 
   aegisasu1:
     image: irods_rs
+    cap_add:
+      - ALL
     hostname: aegisASU1
     env_file: env.properties
     environment:
       RESOURCE_DIR: /aegisASU1Vault
       RESOURCE_NAME: aegisASU1Res
+      SSH_PORT: 22
+      SSH_USER: ansible
     tty: true
     volumes_from:
       - data
@@ -71,11 +78,15 @@ services:
 
   aegisua1:
     image: irods_rs
+    cap_add:
+      - ALL
     hostname: aegisUA1
     env_file: env.properties
     environment:
       RESOURCE_DIR: /aegisUA1Vault
       RESOURCE_NAME: aegisUA1Res
+      SSH_PORT: 22
+      SSH_USER: ansible
     tty: true
     volumes_from:
       - data
@@ -84,11 +95,15 @@ services:
 
   hades:
     image: irods_rs
+    cap_add:
+      - ALL
     hostname: hades
     env_file: env.properties
     environment:
       RESOURCE_DIR: /hadesVault
       RESOURCE_NAME: hadesRes
+      SSH_PORT: 1657
+      SSH_USER: root
     tty: true
     volumes_from:
       - data
@@ -97,11 +112,15 @@ services:
 
   lucy:
     image: irods_rs
+    cap_add:
+      - ALL
     hostname: lucy
     env_file: env.properties
     environment:
       RESOURCE_DIR: /lucyVault
       RESOURCE_NAME: lucyRes
+      SSH_PORT: 1657
+      SSH_USER: root
     tty: true
     volumes_from:
       - data
@@ -110,11 +129,15 @@ services:
 
   snoopy:
     image: irods_rs
+    cap_add:
+      - ALL
     hostname: snoopy
     env_file: env.properties
     environment:
       RESOURCE_DIR: /snoopyVault
       RESOURCE_NAME: snoopyRes
+      SSH_PORT: 1657
+      SSH_USER: root
     tty: true
     volumes_from:
       - data
@@ -128,6 +151,21 @@ services:
     links:
       - aegisasu1
       - aegisua1
+      - ies
+      - hades
+      - lucy
+      - snoopy
+
+  ansible:
+    build:
+      context: ansible
+    hostname: ansible
+    volumes:
+      - ~/repos/irods4-upgrade:/playbooks
+    links:
+      - aegisasu1
+      - aegisua1
+      - dbms
       - ies
       - hades
       - lucy

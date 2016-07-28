@@ -1,0 +1,16 @@
+[dbms]
+dbms
+
+[irods:children]
+ies
+rs
+
+[ies]
+ies
+
+[rs]
+aegisasu1
+aegisua1
+hades
+lucy
+snoopy

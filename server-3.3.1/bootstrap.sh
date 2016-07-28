@@ -1,6 +1,6 @@
 #! /bin/bash
 
-setup_irods ()
+setup_irods()
 {
 su - irods <<EOS
   cd /home/irods/iRODS 
@@ -9,14 +9,34 @@ EOS
 }
 
 
+iptables-input()
+{
+   local protocol="$1"
+   local dport="$2"
+
+   iptables --append INPUT \
+            --match state --state NEW \
+            --match "$protocol" --protocol "$protocol" \
+            --dport "$dport" \
+            --jump ACCEPT
+}
+
+
+# Configure iptables
+iptables-input tcp 1247
+iptables-input tcp 20000:20399
+iptables-input udp 20000:20399
+iptables-input tcp "$SSH_PORT"
+/etc/init.d/iptables save
+
+# Start uuidd
+uuidd
+
 if [ -e /init-scripts/pre.sh ]
 then
   printf 'Running pre init script\n'
   bash /init-scripts/pre.sh
 fi
-
-# Start uuidd
-uuidd
 
 # Configure the rules
 sed --in-place \
@@ -46,5 +66,12 @@ then
 fi
 
 touch /IRODS_READY
+
+# Configure sshd
+sed --in-place "s/#Port .*/Port $SSH_PORT/" /etc/ssh/sshd_config
+service sshd restart
+
+printf '%s\n%s\n' "$ANSIBLE_PASSWORD" "$ANSIBLE_PASSWORD" | passwd ansible
+
 printf 'ready\n'
 bash

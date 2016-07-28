@@ -1,0 +1,23 @@
+StrictHostKeyChecking no
+
+Host aegisasu1
+  User ansible
+
+Host aegisua1
+  User ansible
+
+Host ies
+  Port 1657
+  User root
+
+Host hades
+  Port 1657
+  User root
+
+Host lucy
+  Port 1657
+  User root
+
+Host snoopy
+  Port 1657
+  User root
