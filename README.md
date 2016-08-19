@@ -4,6 +4,10 @@ Ansible scripts for upgrading CyVerse's iRODS grids
 
 ## Installation steps
 
+1. Install requirements for running ansible
+
+    sudo ansible-galaxy install -f -r requirements.yml
+
 1. build the msiSetAVU microservice plugin
 
     git clone https://github.com/iPlantCollaborativeOpenSource/irods-setavu-plugin.git
