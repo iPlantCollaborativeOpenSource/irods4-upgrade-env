@@ -75,7 +75,7 @@ prepare_dbms()
 
 dc-up aegisasu1 aegisua1 hades lucy snoopy
 
-for service in ies aegisasu1 aegisua1 hades lucy snoopy
+for service in dbms ies aegisasu1 aegisua1 hades lucy snoopy
 do
   dc exec "$service" bash -c "
     homeDir=\$(grep --regexp \"^\$SSH_USER\" /etc/passwd | cut --delimiter : --fields 6)

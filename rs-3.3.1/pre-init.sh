@@ -26,7 +26,7 @@ cat > /home/irods/iRODS/config/irods.config <<-EOS
   \$SVR_PORT_RANGE_END = '20399';
   \$IRODS_ADMIN_NAME = '$ADMIN_USER';
   \$IRODS_ADMIN_PASSWORD = '$ADMIN_PASSWORD';
-  \$IRODS_ICAT_HOST = 'irods_ies_1';
+  \$IRODS_ICAT_HOST = 'ies.irods_default';
                                         
   \$DB_NAME = 'ICAT';
   \$RESOURCE_NAME = '$RESOURCE_NAME';
@@ -57,7 +57,7 @@ chown irods:irods /home/irods/iRODS/config/irods.config
 # Wait for IES to become available
 printf 'Waiting for IES\n'
 
-until bash -c 'exec <>/dev/tcp/ies/1247'
+until bash -c 'exec <>/dev/tcp/ies.irods_default/1247'
 do
   sleep 1
 done 2>/dev/null

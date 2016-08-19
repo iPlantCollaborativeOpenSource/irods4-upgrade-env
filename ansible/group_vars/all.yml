@@ -1,0 +1,35 @@
+---
+default_resource: CyVerseRes
+
+aegis_resources:
+  - aegisASU1Res
+
+iclimate_resources:
+  - aegisUA1Res
+
+iplant_resources:
+  - lucyRes
+  - snoopyRes
+
+single_threaded_resources:
+  - aegisASU1Res
+
+dbms_port: 5432
+dbms_username: irodsuser
+dbms_password: password
+
+negotiation_key: fpYfdRTjfUdNfk9PxzP8NddDu0ejo1Z7
+
+rabbitmq_host: amqp
+rabbitmq_port: 5672
+rabbitmq_username: ipc
+rabbitmq_password: mostly810S
+rabbitmq_ephemeral: true        
+
+server_control_plane_key: 9pPENXLE55bNVAytUFabU34bd6NQzXxp
+server_port_range_start: 20000
+server_port_range_end: 20399
+
+zone_admin_username: ipc_admin
+zone_admin_password: password
+zone_key: 02NYml

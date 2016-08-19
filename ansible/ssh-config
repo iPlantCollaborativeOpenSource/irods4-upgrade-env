@@ -1,23 +1,27 @@
 StrictHostKeyChecking no
 
-Host aegisasu1
+Host aegisasu1.irods_default
   User ansible
 
-Host aegisua1
+Host aegisua1.irods_default
   User ansible
 
-Host ies
+Host dbms.irods_default
   Port 1657
   User root
 
-Host hades
+Host hades.irods_default
   Port 1657
   User root
 
-Host lucy
+Host ies.irods_default
   Port 1657
   User root
 
-Host snoopy
+Host lucy.irods_default
+  Port 1657
+  User root
+
+Host snoopy.irods_default
   Port 1657
   User root

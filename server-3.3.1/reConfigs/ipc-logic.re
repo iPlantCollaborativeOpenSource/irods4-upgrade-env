@@ -1,4 +1,4 @@
-# VERSION: 19 custom
+# VERSION: 20
 #
 # The iPLANT specific, environment idependent rule customizations.
 #
@@ -217,18 +217,18 @@ sendAvuCopy(*SourceItemType, *TargetItemType, *Source, *Target) =
 
 ensureAdminOwner(*Item) = msiSetACL('default', 'own', 'rodsadmin', *Item)
 
-isRodsAdmin(*User) {
-  *isAdmin = false;
+canModProtectedAVU(*User) {
+  *canMod = false;
   if (*User == 'bisque') {
-    *isAdmin = true;
+    *canMod = true;
   } else {
     *res = SELECT USER_ID WHERE USER_NAME = *User AND USER_TYPE = 'rodsadmin';
     foreach (*record in *res) {
-      *isAdmin = true;
+      *canMod = true;
       break;
     }
   }
-  *isAdmin;
+  *canMod;
 }
 
 # Gets the original unit for an AVU modification. The argument that is used for the original unit
@@ -312,7 +312,7 @@ avuProtected(*ItemType, *ItemName, *Attribute) {
 # Verifies that an attribute can be modified. If it can't it fails and sends an error message to
 # the caller.
 ensureAVUEditable(*ItemType, *ItemName, *A, *V, *U) {
-  if (avuProtected(*ItemType, *ItemName, *A) && !isRodsAdmin($userNameProxy)) {
+  if (avuProtected(*ItemType, *ItemName, *A) && !canModProtectedAVU($userNameProxy)) {
     cut;
     failmsg(-830000, 'IPLANT ERROR:  attempt to alter protected AVU <*A, *V, *U>');
   }
@@ -396,7 +396,7 @@ ipc_acDeleteCollByAdmin(*ParColl, *ChildColl) {
 # type rodsadmin.
 #
 ipc_acPreProcForModifyAccessControl(*RecursiveFlag, *AccessLevel, *UserName, *Zone, *Path) {
-  if (*UserName == 'rodsadmin' && *AccessLevel != 'own' && !isRodsAdmin($userNameClient)) {
+  if (*UserName == 'rodsadmin' && *AccessLevel != 'own' && !canModProtectedAVU($userNameClient)) {
     cut;
     failmsg(-830000, 'IPLANT ERROR:  attempt to remove ownership from admin user.');
   }
@@ -508,7 +508,7 @@ ipc_acPreProcForModifyAVUMetadata(*Option, *ItemType, *ItemName, *AName, *AValue
 # This rule ensures that only the non-protected AVUs are copied from one item to another.
 ipc_acPreProcForModifyAVUMetadata(*Option, *SourceItemType, *TargetItemType, *SourceItemName,
                                   *TargetItemName) {
-  if (!isRodsAdmin($userNameProxy)) {
+  if (!canModProtectedAVU($userNameProxy)) {
     if (*SourceItemType == '-c') {
       cpUnprotectedCollAVUs(*SourceItemName, *TargetItemType, *TargetItemName);
     } else if (*SourceItemType == '-d') { 

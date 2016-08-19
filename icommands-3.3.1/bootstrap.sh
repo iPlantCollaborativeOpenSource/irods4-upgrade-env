@@ -4,7 +4,7 @@
 # all of the listed resources are registered with ies.
 
 
-export irodsHost=ies
+export irodsHost=ies.irods_default
 export irodsPort=1247
 export irodsZone="$ZONE"
 

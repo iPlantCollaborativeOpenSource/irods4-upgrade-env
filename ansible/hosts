@@ -1,16 +1,16 @@
 [dbms]
-dbms
+dbms.irods_default
 
 [irods:children]
 ies
 rs
 
 [ies]
-ies
+ies.irods_default
 
 [rs]
-aegisasu1
-aegisua1
-hades
-lucy
-snoopy
+aegisasu1.irods_default default_resource_directory=/aegisASU1Vault
+aegisua1.irods_default  default_resource_directory=/aegisUA1Vault
+hades.irods_default     default_resource_directory=/hadesVault
+lucy.irods_default      default_resource_directory=/lucyVault
+snoopy.irods_default    default_resource_directory=/snoopyVault

@@ -8,26 +8,20 @@ su - irods <<EOS
 EOS
 }
 
-
-iptables-input()
-{
-   local protocol="$1"
-   local dport="$2"
-
-   iptables --append INPUT \
-            --match state --state NEW \
-            --match "$protocol" --protocol "$protocol" \
-            --dport "$dport" \
-            --jump ACCEPT
-}
-
-
 # Configure iptables
-iptables-input tcp 1247
-iptables-input tcp 20000:20399
-iptables-input udp 20000:20399
-iptables-input tcp "$SSH_PORT"
-/etc/init.d/iptables save
+iptables --append INPUT \
+         --match state --state NEW \
+         --match tcp --protocol tcp \
+         --dport 1247 \
+         --jump ACCEPT
+
+iptables --append INPUT \
+         --match state --state NEW \
+         --match tcp --protocol tcp \
+         --dport 1248 \
+         --jump REJECT
+
+service iptables save
 
 # Start uuidd
 uuidd
@@ -38,14 +32,15 @@ then
   bash /init-scripts/pre.sh
 fi
 
+readonly IesIpAddr=$(host ies | head --lines 1 | cut --delimiter \  --fields 4)
+
 # Configure the rules
 sed --in-place \
   "{  
-     s/^ipc_AMQP_HOST .*\$/ipc_AMQP_HOST = amqp/
-     s/^ipc_AMQP_PORT .*\$/ipc_AMQP_PORT = 5672/
-     s/^ipc_AMQP_USER .*\$/ipc_AMQP_USER = $RABBITMQ_DEFAULT_USER/
-     s/^ipc_AMQP_PASSWORD .*\$/ipc_AMQP_PASSWORD = $RABBITMQ_DEFAULT_PASS/
-     s/^ipc_RODSADMIN .*\$/ipc_RODSADMIN = $ADMIN_USER/
+     s/RABBITMQ_DEFAULT_USER/$RABBITMQ_DEFAULT_USER/g
+     s/RABBITMQ_DEFAULT_PASS/$RABBITMQ_DEFAULT_PASS/g
+     s/IES_IP_ADDR/$IesIpAddr/g
+     s/ADMIN_USER/$ADMIN_USER/g
      }" \
   /home/irods/iRODS/server/config/reConfigs/ipc-env-prod.re
 

@@ -25,6 +25,9 @@ services:
       context: dbms
     hostname: dbms
     env_file: env.properties
+    environment:
+      SSH_PORT: 1657
+      SSH_USER: root
     volumes_from:
       - data
     ports: 
@@ -47,7 +50,7 @@ services:
     environment:
       SSH_PORT: 1657
       SSH_USER: root
-    hostname: ies
+    hostname: ies.irods_default
     links:
       - amqp
       - dbms
@@ -61,9 +64,9 @@ services:
 
   aegisasu1:
     image: irods_rs
+    hostname: aegisasu1.irods_default
     cap_add:
       - ALL
-    hostname: aegisASU1
     env_file: env.properties
     environment:
       RESOURCE_DIR: /aegisASU1Vault
@@ -78,9 +81,9 @@ services:
 
   aegisua1:
     image: irods_rs
+    hostname: aegisua1.irods_default
     cap_add:
       - ALL
-    hostname: aegisUA1
     env_file: env.properties
     environment:
       RESOURCE_DIR: /aegisUA1Vault
@@ -95,9 +98,9 @@ services:
 
   hades:
     image: irods_rs
+    hostname: hades.irods_default
     cap_add:
       - ALL
-    hostname: hades
     env_file: env.properties
     environment:
       RESOURCE_DIR: /hadesVault
@@ -112,9 +115,9 @@ services:
 
   lucy:
     image: irods_rs
+    hostname: lucy.irods_default
     cap_add:
       - ALL
-    hostname: lucy
     env_file: env.properties
     environment:
       RESOURCE_DIR: /lucyVault
@@ -129,9 +132,9 @@ services:
 
   snoopy:
     image: irods_rs
+    hostname: snoopy.irods_default
     cap_add:
       - ALL
-    hostname: snoopy
     env_file: env.properties
     environment:
       RESOURCE_DIR: /snoopyVault
