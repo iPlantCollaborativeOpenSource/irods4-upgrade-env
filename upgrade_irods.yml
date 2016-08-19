@@ -1,0 +1,554 @@
+---
+# 6. Shutdown iRODS 3.3.x resouce server(s)
+# XXX As of ansible 2.1.1.0 can't disable warnings per play
+- name: shutdown iRODS 3
+  hosts: irods
+  become: true
+  become_user: irods
+  gather_facts: true
+  tasks:
+    - include: tasks/shutdown_irods_3.yml
+      
+# 2. Make a backup of the ICAT database.
+- name: make a backup of the ICAT database 
+  hosts: dbms
+  become: true   
+  become_user: postgres
+  gather_facts: true
+  tasks:
+    # Can't use stat, because don't know postgres's install directory
+    - name: determine if upgrade as already been done
+      shell: |
+        if [ -e "$HOME"/upgrade.sql ]
+        then
+          printf 'exists'
+        fi
+      register: response
+      changed_when: false
+
+    - name: dump the ICAT database
+      shell: pg_dumpall --clean --file $HOME/upgrade.sql --port {{ dbms_port }}
+      when: response.stdout != 'exists'
+
+# 4. Remove resources from resource groups
+# 5. Remove resource groups (confirm: iadmin lrg returns no results)
+- name: remove resource groups
+  hosts: ies
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: Determine if iRODS 4 installation has already begun
+      shell: |
+        yum list installed irods-icat >/dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+          printf 'begun'
+        fi
+      args:
+        warn: false
+      register: yum_response
+      changed_when: false
+
+    - block:  
+        - name: start IES
+          shell: /home/irods/iRODS/irodsctl start
+
+        - include: tasks/remove_resource_group.yml
+          vars:
+            group: aegisRG 
+            members: "{{ aegis_resources }}"
+
+        - include: tasks/remove_resource_group.yml 
+          vars:
+            group: iclimateRG 
+            members: "{{ iclimate_resources }}"
+
+        - include: tasks/remove_resource_group.yml 
+          vars:
+            group: iplantRG 
+            members: "{{ iplant_resources }}"
+
+        - include: tasks/shutdown_irods_3.yml
+      when: yum_response.stdout != 'begun'
+
+- name: Install required software
+  hosts: irods
+  become: true
+  gather_facts: false
+  tasks:
+    - name: install centos-release-SCL
+      package:
+        name: centos-release-SCL
+        state: latest
+
+    - name: install libffi-devel
+      package:
+        name: libffi-devel
+        state: latest
+
+    - name: install openssl-devel
+      package:
+        name: openssl-devel
+        state: latest
+
+    - name: install python 2.7
+      package:
+        name: python27
+        state: latest
+
+- name: Prepare environment for iRODS 4 install
+  hosts: irods
+  become: true
+  gather_facts: false
+  environment:
+    PATH: /opt/rh/python27/root/usr/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /opt/rh/python27/root/usr/lib64
+    XDG_DATA_DIRS: /opt/rh/python27/root/usr/share
+    PKG_CONFIG_PATH: /opt/rh/python27/root/usr/lib64/pkgconfig
+  tasks:
+    - name: ensure LD_LIBRARY_PATH isn't set
+      lineinfile:
+        dest: /home/irods/.bashrc
+        regexp: LD_LIBRARY_PATH=
+        state: absent
+
+    - name: enable python 2.7 for irods user
+      lineinfile:
+        dest: /home/irods/.bashrc
+        line: . /opt/rh/python27/enable
+
+    - name: install jsonschema for python 2.7
+      pip:
+        name: jsonschema
+        state: latest
+
+    - name: install psutil for python 2.7
+      pip:
+        name: psutil
+        state: latest
+
+    - name: install requests for python 2.7
+      pip:
+        name: requests
+        state: latest
+
+    # XXX This will always report as changed. I can't figure out a way to check if urllib3 is
+    # already installed with the secure option.
+    - name: install urllib3
+      shell: pip install urllib3[secure] --upgrade
+
+# 8. Install iRODS 4.0+ packages: irods-icat and a database plugin package (e.g. 
+#    irods-database-plugin-postgres)
+- name: install iRODS 4 on IES
+  hosts: ies
+  become: true
+  gather_facts: false
+  tasks:
+    - name: install irods-icat package
+      yum:
+        name: |
+          ftp://ftp.renci.org/pub/irods/releases/4.1.9/centos6/irods-icat-4.1.9-centos6-x86_64.rpm
+    - name: install irods-database-plugin-postgres package
+      yum:
+        name: |
+          ftp://ftp.renci.org/pub/irods/releases/4.1.9/centos6/irods-database-plugin-postgres93-1.9-centos6-x86_64.rpm 
+
+# 9. Patch database with provided upgrade SQL file (psql ICAT < packaging/upgrade-3.3.xto4.0.0.sql)
+- name: Convert ICAT to version 4
+  hosts: ies
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: upgrade ICAT
+      shell: |
+        psql \
+            --dbname ICAT \
+            --host {{ groups['dbms'][0] }} \
+            --port {{ dbms_port }} \
+            --username {{ dbms_username }} \
+            --command "SELECT resc_hier FROM r_data_main LIMIT 1" \
+          >/dev/null 2>&1
+
+        if [ "$?" -ne 0 ]
+        then
+          psql --quiet \
+              --dbname ICAT \
+              --host {{ groups['dbms'][0] }} \
+              --port {{ dbms_port }} \
+              --username {{ dbms_username }} \
+            < /var/lib/irods/packaging/upgrade-3.3.xto4.0.0.sql
+
+          printf 'upgraded'
+        fi
+      register: response
+      changed_when: response.stdout == 'upgraded'
+   
+    - name: delete specific queries that would be duplicated
+      shell: |
+        psql \
+          --dbname ICAT \
+          --host {{ groups['dbms'][0] }} \
+          --port {{ dbms_port }} \
+          --username {{ dbms_username }} \
+          --command \
+            "DELETE 
+               FROM r_specific_query 
+               WHERE alias IN ('DataObjInCollReCur', 'ilsLACollections', 'ilsLADataObjects')"
+
+# 13. Run ./packaging/setup_irods.sh 
+- name: set up iRODS 4 on IES
+  hosts: ies
+  become: true
+  gather_facts: false
+  environment:
+    PATH: /opt/rh/python27/root/usr/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /opt/rh/python27/root/usr/lib64
+    XDG_DATA_DIRS: /opt/rh/python27/root/usr/share
+    PKG_CONFIG_PATH: /opt/rh/python27/root/usr/lib64/pkgconfig
+  tasks:
+    # XXX If expect worked, this wouldn't need to be done
+    - name: delete existing service_account.config
+      file:
+        path: /etc/irods/service_account.config
+        state: absent
+
+    # XXX expect is too unreliable in ansible 2.1.1.0
+    - name: setup iRODS on IES
+      shell: |
+        /var/lib/irods/packaging/setup_irods.sh <<EOF
+        irods
+        irods
+        iplant
+        1247
+        {{ server_port_range_start }}
+        {{ server_port_range_end }}
+        /var/lib/irods/iRODS/Vault
+        {{ zone_key }}
+        {{ negotiation_key }}
+        1248
+        {{ server_control_plane_key }}
+        https://schemas.irods.org/configuration
+        {{ zone_admin_username }}
+        {{ zone_admin_password }}
+        yes
+        {{ groups['dbms'][0] }}
+        {{ dbms_port }}
+        ICAT
+        {{ dbms_username }}
+        {{ dbms_password }}
+        yes
+        EOF
+
+    - name: stop iRODS on IES
+      service:
+        name: irods
+        pattern: irodsServer
+        state: stopped
+      failed_when: false
+      
+- name: copy irods user environment files
+  hosts: ies
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: copy over .bash_profile, .bashrc, .odbc.ini, .pgpass, .irodsA and irods_environment.json
+      shell: |
+        cp /home/irods/.bash_profile /home/irods/.bashrc /home/irods/.odbc.ini /home/irods/.pgpass \
+           /var/lib/irods/
+        mkdir --parents /var/lib/irods/.irods
+        cp /home/irods/.irods/irods_environment.json /home/irods/.irods/.irodsA \
+           /var/lib/irods/.irods
+
+# 12. Manually update any changes to 'core.re' and 'server_config.json'. Keep in mind immediate 
+#     replication rules (acPostProcForPut, etc.) may be superceded by your new resource composition.
+# 15: Start new 4.0+ iCAT server
+- name: finish irods user migration and customize iRODS 4
+  hosts: ies
+  become: true
+  gather_facts: false
+  environment:
+    PATH: /opt/rh/python27/root/usr/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /opt/rh/python27/root/usr/lib64
+    XDG_DATA_DIRS: /opt/rh/python27/root/usr/share
+    PKG_CONFIG_PATH: /opt/rh/python27/root/usr/lib64/pkgconfig
+  pre_tasks:
+    - name: change irods home to /var/lib/irods
+      user:
+        name: irods
+        home: /var/lib/irods
+
+  roles:
+    - role: CyVerse-Ansible.cyverse-irods-cfg
+      irods_icat_host: "{{ groups['ies'][0] }}"
+      irods_default_resource_name: "{{ default_resource }}"
+      irods_negotiation_key: "{{ negotiation_key }}"
+      irods_server_control_plane_key: "{{ server_control_plane_key }}"
+      irods_server_port_range_start: "{{ server_port_range_start }}"
+      irods_server_port_range_end: "{{ server_port_range_end }}"
+      irods_zone_key: "{{ zone_key }}"
+      irods_zone_user: "{{ zone_admin_username }}"
+      irods_amqp_host: "{{ rabbitmq_host }}"
+      irods_amqp_port: "{{ rabbitmq_port }}"
+      irods_amqp_username: "{{ rabbitmq_username }}"
+      irods_amqp_password: "{{ rabbitmq_password }}"
+      irods_amqp_ephemeral: "{{ rabbitmq_ephemeral }}"
+      irods_single_threaded_resources: "{{ single_threaded_resources }}"
+      irods_db:
+        host: "{{ groups['dbms'][0] }}"
+        port: "{{ dbms_port }}"
+        username: "{{ dbms_username }}"
+        password: "{{ dbms_password }}"
+ 
+  post_tasks:
+    - name: start iRODS on IES
+      service:
+        name: irods
+        pattern: irodsServer
+        state: started
+
+# 16. On all resource servers in the same Zone, install and setup 4.0+. Existing configuration details should be ported as well ('server.config', 'core.re', Vault permissions).
+- name: Upgrade resource servers to iRODS 4
+  hosts: rs
+  become: true
+  gather_facts: false
+  environment:
+    PATH: /opt/rh/python27/root/usr/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /opt/rh/python27/root/usr/lib64
+    XDG_DATA_DIRS: /opt/rh/python27/root/usr/share
+    PKG_CONFIG_PATH: /opt/rh/python27/root/usr/lib64/pkgconfig
+  tasks:
+    - name: install irods resource server package
+      yum:
+        name: |
+          ftp://ftp.renci.org/pub/irods/releases/4.1.9/centos6/irods-resource-4.1.9-centos6-x86_64.rpm
+
+    # XXX If expect worked, this wouldn't need to be done
+    - name: delete existing service_account.config
+      file:
+        path: /etc/irods/service_account.config
+        state: absent
+
+    # XXX expect is too unreliable in ansible 2.1.1.0
+    - name: setup iRODS on resource servers
+      shell: |
+        /var/lib/irods/packaging/setup_irods.sh<<EOF
+        irods
+        irods
+        1247
+        {{ server_port_range_start }}
+        {{ server_port_range_end }}
+        {{ default_resource_directory }}
+        {{ zone_key }}
+        {{ negotiation_key }}
+        1248
+        {{ server_control_plane_key }}
+        https://schemas.irods.org/configuration
+        {{ zone_admin_username }}
+        yes
+        {{ groups['ies'][0] }}
+        iplant
+        yes
+        {{ zone_admin_password }}
+        EOF
+
+    - name: stop iRODS on resource servers
+      service:
+        name: irods
+        pattern: irodsServer
+        state: stopped
+      failed_when: false
+      
+- name: copy stuff from old home to new
+  hosts: rs
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: copy over .bash_profile, .bashrc, .irodsA and irods_environment.json
+      shell: |
+        cp /home/irods/.bash_profile /home/irods/.bashrc /var/lib/irods/
+        mkdir --parents /var/lib/irods/.irods
+        cp /home/irods/.irods/irods_environment.json /home/irods/.irods/.irodsA \
+           /var/lib/irods/.irods
+
+- name: finish irods user migration and customize iRODS 4
+  hosts: rs
+  become: true
+  gather_facts: false
+  environment:
+    PATH: /opt/rh/python27/root/usr/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /opt/rh/python27/root/usr/lib64
+    XDG_DATA_DIRS: /opt/rh/python27/root/usr/share
+    PKG_CONFIG_PATH: /opt/rh/python27/root/usr/lib64/pkgconfig
+  pre_tasks:
+    - name: change irods home to /var/lib/irods
+      user:
+        name: irods
+        home: /var/lib/irods
+
+  roles:
+    - role: CyVerse-Ansible.cyverse-irods-cfg
+      irods_icat_host: "{{ groups['ies'][0] }}"
+      irods_default_resource_name: "{{ default_resource }}"
+      irods_negotiation_key: "{{ negotiation_key }}"
+      irods_server_control_plane_key: "{{ server_control_plane_key }}"
+      irods_server_port_range_start: "{{ server_port_range_start }}"
+      irods_server_port_range_end: "{{ server_port_range_end }}"
+      irods_zone_key: "{{ zone_key }}"
+      irods_zone_user: "{{ zone_admin_username }}"
+      irods_amqp_host: "{{ rabbitmq_host }}"
+      irods_amqp_port: "{{ rabbitmq_port }}"
+      irods_amqp_username: "{{ rabbitmq_username }}"
+      irods_amqp_password: "{{ rabbitmq_password }}"
+      irods_amqp_ephemeral: "{{ rabbitmq_ephemeral }}"
+      irods_single_threaded_resources: "{{ single_threaded_resources }}"
+ 
+  post_tasks:
+    - name: start iRODS on resource servers
+      service:
+        name: irods
+        pattern: irodsServer
+        state: started
+
+# 17. Rebuild Resource Hierarchies from previous Resource Group configurations (iadmin 
+#     addchildtoresc) (See Composable Resources)
+- name: rebuild resource hierarchies
+  hosts: ies
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: remove newly created demoResc
+      command: iadmin rmresc demoResc
+
+    - name: remove newly created resources on resource servers
+      command: iadmin rmresc {{ item | regex_replace('^([^\.]*).*$', '\1') }}Resource
+      with_items: "{{ groups['rs'] }}" 
+
+    - name: create CyVerseRes
+      shell: |
+        if ! ilsresc CyVerseRes
+        then 
+          iadmin mkresc CyVerseRes random
+        fi
+
+    - name: add children to CyVerseRes
+      command: iadmin addchildtoresc CyVerseRes {{ item }}
+      with_items: "{{ iplant_resources }}"
+
+    - name: create aegisReplRes
+      command: iadmin mkresc aegisReplRes random
+
+    - name: add children to aegisReplRes
+      command: iadmin addchildtoresc aegisReplRes {{ item }}
+      with_items: "{{ aegis_resources }}"
+
+# 18. Install Custom Plugins (Microservice & Resources)
+- name: install bisque_ops.py
+  hosts: ies
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: install bisque_ops.py
+      get_url:
+        url: |
+          https://biodev.ece.ucsb.edu/projects/bisquik/browser/bisque/contrib/irods/bisque_ops/bisque_ops.py?format=txt
+        dest: /var/lib/irods/iRODS/server/bin/cmd/bisque_ops.py
+        mode: u+x
+
+- name: clone required repos locally
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: clone command scripts git repo
+      git:
+        repo: https://github.com/cyverse/irods-cmd-scripts.git
+        dest: /irods-cmd-scripts
+
+- name: install remaining command scripts and plugins
+  hosts: irods
+  become: true
+  become_user: irods
+  gather_facts: false
+  tasks:
+    - name: install command scripts
+      copy: 
+        src: /irods-cmd-scripts/{{ item }}
+        dest: /var/lib/irods/iRODS/server/bin/cmd/{{ item }}
+        mode: u+x
+      with_items:
+        - amqptopicsend.py
+        - generateuuid.sh
+
+    - name: copy SetAVU plugin to proper location
+      copy:
+        src: irods-setavu-plugin/src/libmsiSetAVU.so
+        dest: /var/lib/irods/plugins/microservices/libmsiSetAVU.so
+
+- name: install NetCDF plugins
+  hosts: irods
+  become: true
+  gather_facts: false
+  tasks:
+    - name: install irods-runtime package
+      yum:
+        name: |
+          ftp://ftp.renci.org/pub/irods/releases/4.1.9/centos6/irods-runtime-4.1.9-centos6-x86_64.rpm
+    
+    - name: copy API plugin RPM
+      copy:
+        src: irods-netcdf-plugin/src/api/build/irods-api-plugin-netcdf-1.0-centos6.rpm
+        dest: /root/irods-api-plugin-netcdf-1.0-centos6.rpm
+
+    - name: install API plugin
+      yum:
+        name: /root/irods-api-plugin-netcdf-1.0-centos6.rpm
+
+    - name: copy microservices plugin RPM
+      copy:
+        src: irods-netcdf-plugin/src/microservices/build/irods-microservice-plugin-netcdf-1.0-centos6.rpm
+        dest: /root/irods-microservice-plugin-netcdf-1.0-centos6.rpm
+
+    - name: install microservices plugin
+      yum:
+        name: /root/irods-microservice-plugin-netcdf-1.0-centos6.rpm
+
+    - name: copy icommands RPM
+      copy:
+        src: irods-netcdf-plugin/src/icommands/build/irods-icommands-netcdf-1.0-centos6.rpm
+        dest: /root/irods-icommands-netcdf-1.0-centos6.rpm
+
+    - name: install icommands
+      yum:
+        name: /root/irods-icommands-netcdf-1.0-centos6.rpm
+
+    - name: stop irods
+      service:
+        name: irods
+        pattern: irodsServer
+        state: stopped
+
+- name: start IES
+  hosts: ies
+  become: true
+  gather_facts: false
+  tasks:
+    - name: start IES
+      service:
+        name: irods
+        state: started
+
+- name: start resource servers
+  hosts: rs
+  become: true
+  gather_facts: false
+  tasks:
+    - name: start resource servers
+      service:
+        name: irods
+        state: started
+

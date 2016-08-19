@@ -1,0 +1,36 @@
+---
+- name: unblock access to iRODS
+  hosts: irods
+  become: true
+  gather_facts: true
+  tasks:
+    - name: determine the name of the iptables INPUT chain
+      shell: |
+        sed --quiet 's/^-A \(.*INPUT\) .*-m state --state NEW -m tcp .*--dport 1247 -j .*$/\1/p' \
+            /etc/sysconfig/iptables \
+          | head --lines 1
+      args:
+        warn: false
+      register: sed
+      changed_when: false
+
+    - name: unblock port 1247 for everyone else
+      lineinfile:
+        dest: /etc/sysconfig/iptables
+        line: -A {{ sed.stdout }} -m state --state NEW -m tcp -p tcp --dport 1247 -j REJECT
+        state: absent
+      register: unblock_rest
+
+    - name: remove special access for resource servers
+      lineinfile:
+        dest: /etc/sysconfig/iptables
+        line: -A {{ sed.stdout }} -m state --state NEW -m tcp -p tcp -s {{ lookup('dig', item) }} --dport 1247 -j ACCEPT
+        state: absent
+      with_items: "{{ groups['irods'] }}"
+      register: rs_access
+
+    - name: reload iptables
+      service:
+        name: iptables
+        state: restarted  # XXX reloaded fails
+      when: rs_access|changed or unblock_rest|changed 

@@ -1,0 +1,12 @@
+---
+- include: install_ansible_support.yml
+
+- include: block_access.yml
+
+- include: upgrade_system_packages.yml
+
+- include: upgrade_irods.yml
+
+- include: restore_access.yml
+
+- include: reboot.yml
