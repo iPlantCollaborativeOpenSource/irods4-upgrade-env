@@ -537,9 +537,10 @@
   become: true
   gather_facts: false
   tasks:
-    - name: start IES
+    - name: start IES 4 after custom
       service:
         name: irods
+        pattern: irodsServer
         state: started
 
 - name: start resource servers
@@ -550,5 +551,6 @@
     - name: start resource servers
       service:
         name: irods
+        pattern: irodsServer
         state: started
 
