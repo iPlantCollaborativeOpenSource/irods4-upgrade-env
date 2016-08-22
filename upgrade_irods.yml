@@ -428,6 +428,7 @@
   tasks:
     - name: remove newly created demoResc
       command: iadmin rmresc demoResc
+      when: default_resource != 'demoResc'
 
     - name: remove newly created resources on resource servers
       command: iadmin rmresc {{ item | regex_replace('^([^\.]*).*$', '\1') }}Resource
