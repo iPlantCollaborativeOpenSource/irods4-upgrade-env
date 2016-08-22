@@ -3,6 +3,8 @@
 
 - include: block_access.yml
 
+- include: open_control_port.yml
+
 - include: upgrade_system_packages.yml
 
 - include: upgrade_irods.yml

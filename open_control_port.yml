@@ -1,0 +1,21 @@
+---
+# XXX For ansible 2.1.1.0, iptables can't find our rules
+- name: open control plane port
+  hosts: irods
+  become: true
+  gather_facts: true
+  tasks:
+    - include: tasks/set_iptables_input_chain.yml
+
+    - name: open port 1248 
+      lineinfile:
+        dest: /etc/sysconfig/iptables
+        insertafter: -A {{ iptables_input_chain }} .*-m state --state NEW -m tcp .*--dport 1247
+        line: -A {{ iptables_input_chain }} -m state --state NEW -m tcp -p tcp --dport 1248 -j ACCEPT
+      register: access_1248
+ 
+    - name: reload iptables
+      service:
+        name: iptables
+        state: restarted  # XXX reloaded fails
+      when: access_1248|changed
