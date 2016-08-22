@@ -7,7 +7,7 @@
   tasks:
     - name: determine the name of the iptables INPUT chain
       shell: |
-        sed --quiet 's/^-A \(.*INPUT\) .*-m state --state NEW -m tcp .*--dport 1247 -j .*$/\1/p' \
+        sed --quiet 's/^-A \(.*INPUT\) .*-m state --state NEW -m tcp .*--dport 1247 .*$/\1/p' \
             /etc/sysconfig/iptables \
           | head --lines 1
       args:
