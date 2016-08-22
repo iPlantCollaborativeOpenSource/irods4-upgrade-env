@@ -434,15 +434,15 @@
       command: iadmin rmresc {{ item | regex_replace('^([^\.]*).*$', '\1') }}Resource
       with_items: "{{ groups['rs'] }}" 
 
-    - name: create CyVerseRes
+    - name: create {{ default_resource }}
       shell: |
-        if ! ilsresc CyVerseRes
+        if ! ilsresc {{ default_resource }}
         then 
-          iadmin mkresc CyVerseRes random
+          iadmin mkresc {{ default_resource }} random
         fi
 
-    - name: add children to CyVerseRes
-      command: iadmin addchildtoresc CyVerseRes {{ item }}
+    - name: add children to {{ default_resource }}
+      command: iadmin addchildtoresc {{ default_resource }} {{ item }}
       with_items: "{{ iplant_resources }}"
 
     - name: create aegisReplRes
