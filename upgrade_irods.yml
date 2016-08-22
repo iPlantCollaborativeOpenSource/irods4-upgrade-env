@@ -97,6 +97,11 @@
         name: python27
         state: latest
 
+    - name: remove python-six
+      pip:
+        name: six
+        state: absent
+
 - name: Prepare environment for iRODS 4 install
   hosts: irods
   become: true
@@ -467,7 +472,7 @@
     - name: clone command scripts git repo
       git:
         repo: https://github.com/cyverse/irods-cmd-scripts.git
-        dest: /irods-cmd-scripts
+        dest: /home/tedgin/projects/irods-4-upgrade/irods4-upgrade/irods-cmd-scripts
 
 - name: install remaining command scripts and plugins
   hosts: irods
@@ -477,7 +482,7 @@
   tasks:
     - name: install command scripts
       copy: 
-        src: /irods-cmd-scripts/{{ item }}
+        src: /home/tedgin/projects/irods-4-upgrade/irods4-upgrade/irods-cmd-scripts/{{ item }}
         dest: /var/lib/irods/iRODS/server/bin/cmd/{{ item }}
         mode: u+x
       with_items:
