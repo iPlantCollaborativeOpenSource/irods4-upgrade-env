@@ -447,6 +447,7 @@
 
     - name: create aegisReplRes
       command: iadmin mkresc aegisReplRes random
+      when: aegis_resources|length > 0
 
     - name: add children to aegisReplRes
       command: iadmin addchildtoresc aegisReplRes {{ item }}
