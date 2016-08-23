@@ -5,15 +5,16 @@
   gather_facts: true
   tasks:
     - name: reboot
-      command: /sbin/reboot
+      command: /sbin/shutdown -r +2
       async: 0
       poll: 0
+      ignore_errors: true
       
     - name: wait for server to stop
       become: false
-      local_action: wait_for host={{ ansible_host }} port={{ ansible_ssh_port }} state=stopped
+      local_action: wait_for host={{ inventory_hostname }} port={{ ansible_ssh_port }} state=stopped
 
     - name: verify server up
       become: false
-      local_action: wait_for host={{ ansible_host }} port={{ ansible_ssh_port }} state=started
+      local_action: wait_for host={{ inventory_hostname }} port={{ ansible_ssh_port }} state=started
 
