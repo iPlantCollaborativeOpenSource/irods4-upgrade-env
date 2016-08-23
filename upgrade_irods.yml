@@ -474,17 +474,17 @@
     - name: clone command scripts git repo
       git:
         repo: https://github.com/cyverse/irods-cmd-scripts.git
-        dest: /home/tedgin/projects/irods-4-upgrade/irods4-upgrade/irods-cmd-scripts
+        dest: "{{ ansible_env.PWD }}/irods-cmd-scripts"
 
 - name: install remaining command scripts and plugins
   hosts: irods
   become: true
   become_user: irods
-  gather_facts: false
+  gather_facts: true
   tasks:
     - name: install command scripts
       copy: 
-        src: /home/tedgin/projects/irods-4-upgrade/irods4-upgrade/irods-cmd-scripts/{{ item }}
+        src: irods-cmd-scripts/{{ item }}
         dest: /var/lib/irods/iRODS/server/bin/cmd/{{ item }}
         mode: u+x
       with_items:
