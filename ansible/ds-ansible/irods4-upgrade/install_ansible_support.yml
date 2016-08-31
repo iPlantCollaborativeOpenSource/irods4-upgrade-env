@@ -1,0 +1,15 @@
+---
+- name: Install packages required by ansible
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: install pip
+      package:
+        name: python-pip
+        state: present
+
+    - name: install virtualenv
+      package:
+        name: python-virtualenv
+        state: present

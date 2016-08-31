@@ -1,0 +1,45 @@
+---
+# A flag indicating whether or not these playbooks are allowed to manage the system. i.e., do things
+# like update system packages and reboot
+manage_system: true
+
+# The new name for the default iRODS resource
+default_resource: CyVerseRes
+
+# The resources in aegisRG
+aegis_resources: []
+
+# The resources in iclimateRG
+iclimate_resources: []
+
+# The resources in iplantRG
+iplant_resources: []
+
+# The resources who should only be accessed indirectly through the IES
+single_threaded_resources: []
+
+# The DBMS connection info used by the IES
+dbms_port: 5432
+dbms_username: irodsuser
+dbms_password: password
+
+# The negotiation key
+negotiation_key: TEMPORARY_32byte_negotiation_key
+
+# The RabbitMQ connection info
+rabbitmq_host: localhost
+rabbitmq_port: 5672
+rabbitmq_username: guest
+rabbitmq_password: guest
+rabbitmq_ephemeral: true  # Whether or not the iRODS artifacts persist when not connected       
+
+server_control_plane_key: TEMPORARY__32byte_ctrl_plane_key
+server_port_range_start: 20000
+server_port_range_end: 20199
+
+# The iRODS admin connection credentials
+zone_admin_username: rods
+zone_admin_password: rods
+
+zone_key: TEMPORARY_zone_key
+

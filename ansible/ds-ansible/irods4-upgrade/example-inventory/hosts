@@ -1,0 +1,16 @@
+[dbms]
+# The DBMS that holds the ICAT DB
+dbms.domain.net
+
+[irods:children]
+ies
+rs
+
+[ies]
+# The server hosting the ICAT enabled iRODS service
+ies.domain.net
+
+[rs]
+# The servers hosting the iRODS resource services
+rs1.domain.net
+rs2.domain.net
