@@ -10,7 +10,7 @@
 
 - include: upgrade_irods.yml
 
-- include: restore_access.yml
+- include: restore_cyverse_access.yml
 
 - include: reboot.yml
   when: manage_system

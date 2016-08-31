@@ -13,6 +13,13 @@
         state: absent
       register: unblock_rest
 
+    - name: ensure CyVerse user don't have special access
+      lineinfile:
+        dest: /etc/sysconfig/iptables
+        line: -A {{ iptables_input_chain }} -m state --state NEW -m tcp -p tcp -s 128.196.38.0    /25 --dport 1247 -j ACCEPT
+        state: absent
+      register: cyverse_access
+
     - name: remove special access for resource servers
       lineinfile:
         dest: /etc/sysconfig/iptables
@@ -25,4 +32,4 @@
       service:
         name: iptables
         state: restarted  # XXX reloaded fails
-      when: rs_access|changed or unblock_rest|changed 
+      when: rs_access|changed or cyverse_access|changed or unblock_rest|changed 
