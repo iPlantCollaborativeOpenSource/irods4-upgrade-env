@@ -467,15 +467,6 @@
         dest: /var/lib/irods/iRODS/server/bin/cmd/bisque_ops.py
         mode: u+x
 
-- name: clone required repos locally
-  hosts: localhost
-  gather_facts: true
-  tasks:
-    - name: clone command scripts git repo
-      git:
-        repo: https://github.com/cyverse/irods-cmd-scripts.git
-        dest: "{{ ansible_env.PWD }}/irods-cmd-scripts"
-
 - name: install remaining command scripts and plugins
   hosts: irods
   become: true

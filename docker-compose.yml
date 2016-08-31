@@ -163,8 +163,6 @@ services:
     build:
       context: ansible
     hostname: ansible
-    volumes:
-      - ~/repos/irods4-upgrade:/playbooks
     links:
       - aegisasu1
       - aegisua1

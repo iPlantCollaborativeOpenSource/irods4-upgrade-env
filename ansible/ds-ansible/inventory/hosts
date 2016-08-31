@@ -1,0 +1,16 @@
+[dbms]
+dbms.irods_default 
+
+[irods:children]
+ies
+rs
+
+[ies]
+ies.irods_default
+
+[rs]
+aegisasu1.irods_default
+aegisua1.irods_default
+hades.irods_default  
+lucy.irods_default  
+snoopy.irods_default
