@@ -1,0 +1,5 @@
+---
+- name: shutdown irods 3
+  shell: /home/irods/iRODS/irodsctl stop
+  args:
+    warn: false
