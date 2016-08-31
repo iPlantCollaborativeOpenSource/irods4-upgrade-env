@@ -6,9 +6,11 @@
 - include: open_control_port.yml
 
 - include: upgrade_system_packages.yml
+  when: manage_system
 
 - include: upgrade_irods.yml
 
 - include: restore_access.yml
 
 - include: reboot.yml
+  when: manage_system
