@@ -14,3 +14,12 @@
 
 - include: reboot.yml
   when: manage_system
+
+- name: wait for verification of install
+  hosts: localhost
+  tasks:
+    - name: waiting for verification of install
+      pause:
+        prompt: Please make sure that iRODS still works.
+
+- include: restore_access.yml
