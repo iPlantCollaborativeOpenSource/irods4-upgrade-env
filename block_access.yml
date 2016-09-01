@@ -7,6 +7,13 @@
   tasks:
     - include: tasks/set_iptables_input_chain.yml
 
+    - name: ensure CyVerse user don't have special access
+      lineinfile:
+        dest: /etc/sysconfig/iptables
+        line: -A {{ iptables_input_chain }} -m state --state NEW -m tcp -p tcp -s 128.196.38.0    /25 --dport 1247 -j ACCEPT
+        state: absent
+      register: cyverse_access
+
     - name: ensure resource servers can still access IES
       lineinfile:
         dest: /etc/sysconfig/iptables
@@ -26,4 +33,4 @@
       service:
         name: iptables
         state: restarted  # XXX reloaded fails
-      when: rs_access|changed or block_rest|changed
+      when: cyverse_access|changed or rs_access|changed or block_rest|changed
