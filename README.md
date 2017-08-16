@@ -1,23 +1,12 @@
 # irods4-upgrade-env
 
-This is a collection of docker containers that mimic The iPlant Collaborative's production iRODS 
-grid. It is intended to be the grid used to test The iPlant Colalborative's process for upgrading
-production grid to iRODS 4.
+This is a collection of docker containers that mimic CyVerse's production iRODS grid. It is intended to be the grid used to test CyVerse's process for upgrading production grid to iRODS 4.
 
-## iPlant Collaborative's current production deployment of iRODS
+## CyVerse's current production deployment of iRODS
 
-The iPlant Collaborative's production iRODS grid uses a patched version of iRODS 3.3.1. It consists 
-of an IES that isn't also a resource server. The ICAT database is hosted on a dedicated postgres 
-DBMS running on a separate server. There are currently 19 resource servers, spread across 5 
-institutions.
+CyVerse's production iRODS grid uses a patched version of iRODS 3.3.1. It consists of an IES that isn't also a resource server. The ICAT database is hosted on a dedicated postgres DBMS running on a separate server. There are currently 19 resource servers, spread across 5 institutions.
 
-The iPlant Collaborative's production iRODS zone, `iplant`, consists of 20 resources and 3 resource
-groups. The default resource group, `iplantRG`, acts as the default resource. It consists of a pool 
-of resources randomly chosen for new data. Currently, the pool consists of the resources `lucyRes` 
-and `pennyRes`. The `aegisRG` group contains remote replicas of data written to 
-`/iplant/home/shared/aegis` collection. It consists of the resources `aegisASU1Res` and 
-`aegisNAU1Res`. A resource is chosen randomly for new data. The `iclimateRG` resource group contains 
-only the `aegisUA1Res` resource.
+CyVerse's production iRODS zone, `iplant`, consists of 20 resources and 3 resource groups. The default resource group, `iplantRG`, acts as the default resource. It consists of a pool of resources randomly chosen for new data. Currently, the pool consists of the resources `lucyRes`and `pennyRes`. The `aegisRG` group contains remote replicas of data written to `/iplant/home/shared/aegis` collection. It consists of the resources `aegisASU1Res` and `aegisNAU1Res`. A resource is chosen randomly for new data. The `iclimateRG` resource group contains only the `aegisUA1Res` resource.
 
 There is a largely, one-to-one mapping between resource servers and resources with one exception. 
 The server `shelby` hosts both the `apolloResc` and `shelbyRes` resources. We planned to move the
